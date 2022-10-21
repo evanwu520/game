@@ -144,8 +144,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rand.Seed(time.Now().UnixNano())
-	fmt.Println(rand.Intn(30))
+	// TODO verify user
 
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), userInfo: geneGuestId()}
 	client.hub.register <- client
