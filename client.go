@@ -6,6 +6,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"game/core"
 	"log"
@@ -77,16 +78,27 @@ func (c *Client) readPump() {
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 
-		// TODO data define
-		if "bet" == string(message) {
+		handleEvent := &event{}
+		err = json.Unmarshal(message, handleEvent)
 
-			msg, _ := core.GetGameBetInstance().Bet(c.userInfo, "r1")
+		if err != nil {
+			log.Println(err.Error())
+			c.send <- []byte("event request err !")
+			continue
+		}
+
+		switch handleEvent.Cmd {
+		case bet:
+			msg, _ := core.GetGameBetInstance().Bet(c.userInfo, handleEvent.Value)
 			// personal msg
 			c.send <- []byte(msg)
-
-		} else {
-			c.hub.broadcast <- message
+		case brocast:
+			c.hub.broadcast <- []byte(fmt.Sprintf("%s:%v", c.userInfo.Name, handleEvent.Value))
+		default:
+			c.send <- []byte("event request err !")
+			continue
 		}
+
 	}
 }
 
