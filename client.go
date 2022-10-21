@@ -6,11 +6,15 @@ package main
 
 import (
 	"bytes"
+	"fmt"
+	"game/core"
 	"log"
+	"math/rand"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -44,6 +48,8 @@ type Client struct {
 	// The websocket connection.
 	conn *websocket.Conn
 
+	userInfo *core.UserInfo
+
 	// Buffered channel of outbound messages.
 	send chan []byte
 }
@@ -70,7 +76,17 @@ func (c *Client) readPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.hub.broadcast <- message
+
+		// TODO data define
+		if "bet" == string(message) {
+
+			msg, _ := core.GetGameBetInstance().Bet(c.userInfo, "r1")
+			// personal msg
+			c.send <- []byte(msg)
+
+		} else {
+			c.hub.broadcast <- message
+		}
 	}
 }
 
@@ -127,11 +143,33 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+
+	rand.Seed(time.Now().UnixNano())
+	fmt.Println(rand.Intn(30))
+
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), userInfo: geneGuestId()}
 	client.hub.register <- client
+
+	client.hub.broadcast <- []byte(fmt.Sprintf("welecome %s", client.userInfo.Name))
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
+}
+
+func geneGuestId() *core.UserInfo {
+
+	info := &core.UserInfo{}
+
+	rand.Seed(time.Now().UnixNano())
+	max := 999999999
+	min := 1
+	v := rand.Intn(max-min) + min
+
+	info.Name = fmt.Sprintf("%09d", v)
+	info.Balance = decimal.NewFromInt(1000)
+
+	return info
+
 }

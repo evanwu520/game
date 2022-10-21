@@ -34,11 +34,13 @@ func newHub() *Hub {
 	}
 }
 
+//
 func (h *Hub) run() {
 	for {
 		select {
 		case client := <-h.register:
 			h.clients[client] = true
+
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
@@ -57,11 +59,12 @@ func (h *Hub) run() {
 	}
 }
 
+// 個別發送
 func (h *Hub) runGameListener() {
 
 	for {
 		select {
-		case bytes := <-core.Broadcast:
+		case bytes := <-core.GameBroadcast:
 			var wg sync.WaitGroup
 
 			for client := range h.clients {

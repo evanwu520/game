@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var Broadcast chan []byte = make(chan []byte)
+var GameBroadcast chan []byte = make(chan []byte)
 
 var once sync.Once
 
@@ -30,10 +30,10 @@ func (g *gameManager) getStep() []*Stage {
 
 	var stages []*Stage
 
-	stages = append(stages, &Stage{Action: "start", WaitTime: 5})
-	stages = append(stages, &Stage{Action: "count down", WaitTime: 3})
-	stages = append(stages, &Stage{Action: "stop", WaitTime: 1})
-	stages = append(stages, &Stage{Action: "result", WaitTime: 3})
+	stages = append(stages, &Stage{Action: start, WaitTime: 5})
+	stages = append(stages, &Stage{Action: countDown, WaitTime: 3})
+	stages = append(stages, &Stage{Action: stop, WaitTime: 1})
+	stages = append(stages, &Stage{Action: result, WaitTime: 3})
 
 	return stages
 }
@@ -43,11 +43,20 @@ type roomSetting struct {
 	Step   []*Stage
 	Stop   chan bool
 	Start  chan bool
-	Action string
+	Action action
 }
 
+type action string
+
+const (
+	start     action = "start"
+	countDown action = "count down"
+	stop      action = "stop"
+	result    action = "result"
+)
+
 type Stage struct {
-	Action   string
+	Action   action
 	WaitTime time.Duration
 }
 
@@ -87,7 +96,7 @@ func (g *gameManager) Run(setting *roomSetting) {
 
 					setting.Action = v.Action
 
-					Broadcast <- []byte(fmt.Sprintf("gameId:%v %v", setting.RoomId, v.Action))
+					GameBroadcast <- []byte(fmt.Sprintf("gameId:%v %v", setting.RoomId, v.Action))
 
 					time.Sleep(v.WaitTime * time.Second)
 				}
