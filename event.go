@@ -3,8 +3,9 @@ package main
 type cmd string
 
 const (
-	bet     cmd = "bet"
-	brocast cmd = "brocast"
+	gameList cmd = "game_list" // TODO
+	bet      cmd = "bet"
+	brocast  cmd = "brocast"
 )
 
 type event struct {

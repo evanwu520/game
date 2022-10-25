@@ -92,6 +92,7 @@ func (c *Client) readPump() {
 			// personal msg
 			c.send <- core.GetGameBetInstance().Bet(c.userInfo, handleEvent.Value, string(bet))
 		case brocast:
+			// TODO reponse brocast data
 			c.hub.broadcast <- []byte(fmt.Sprintf("%s:%v", c.userInfo.Name, handleEvent.Value))
 		default:
 			c.send <- []byte("event request err !")

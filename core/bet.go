@@ -29,7 +29,7 @@ type betInfo struct {
 }
 
 type betResponse struct {
-	Cmd          string          `json:"action"`
+	Cmd          string          `json:"cmd"`
 	BetInfo      *betInfo        `json:"bet_info"`
 	Balnace      decimal.Decimal `json:"balance"`
 	ErrorMessage string          `json:"error_message"`
