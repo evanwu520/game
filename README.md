@@ -42,3 +42,19 @@ using gorilla websocket to practice brocast game step
 {"cmd":"bet","bet_info":{"room_id":"r1","area":1,"amount":"100"},"balance":"900","error_message":""}
 ```
 
+
+
+- game room list
+
+```
+{"cmd":"game_room","rooms":["r2","r1"]}
+```
+
+- game state
+
+```
+{"cmd":"game_state","room_name":"r2","action":"start_bet","second":5}
+{"cmd":"game_state","room_name":"r2","action":"count_down","second":3}
+{"cmd":"game_state","room_name":"r2","action":"stop_bet","second":0}
+{"cmd":"game_state","room_name":"r2","action":"result","second":0}
+```

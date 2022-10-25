@@ -3,7 +3,7 @@ package main
 type cmd string
 
 const (
-	gameList cmd = "game_list" // TODO
+	gameList cmd = "game_list"
 	bet      cmd = "bet"
 	brocast  cmd = "brocast"
 )

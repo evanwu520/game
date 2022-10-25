@@ -65,7 +65,7 @@ func (*gameBet) Bet(info *UserInfo, v interface{}, cmd string) []byte {
 			return data
 		}
 
-		if room.Action == start || room.Action == countDown {
+		if room.Action == startBet || room.Action == countDown {
 			info.Balance = info.Balance.Sub(betAmount)
 			resp.Balnace = info.Balance
 			// return fmt.Sprintf("%s bet %v success ! , balance:%v", info.Name, betAmount, info.Balance), true
