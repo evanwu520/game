@@ -66,4 +66,4 @@ using gorilla websocket to practice brocast game step
 ```
 
 
-- if cmd not contain above cmd  , please direct show data
+**_if cmd not contain above cmd  , please direct show data_**
