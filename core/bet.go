@@ -28,8 +28,15 @@ type betInfo struct {
 	Amount decimal.Decimal `json:"amount"`
 }
 
+type betResponse struct {
+	Cmd          string          `json:"action"`
+	BetInfo      *betInfo        `json:"bet_info"`
+	Balnace      decimal.Decimal `json:"balance"`
+	ErrorMessage string          `json:"error_message"`
+}
+
 // TODO response data
-func (*gameBet) Bet(info *UserInfo, v interface{}) (string, bool) {
+func (*gameBet) Bet(info *UserInfo, v interface{}, cmd string) []byte {
 
 	bet := &betInfo{}
 
@@ -41,18 +48,36 @@ func (*gameBet) Bet(info *UserInfo, v interface{}) (string, bool) {
 
 	betAmount := bet.Amount
 
+	resp := &betResponse{}
+	resp.Cmd = cmd
+	resp.BetInfo = bet
+	resp.Balnace = info.Balance
+
 	if room, exist := GetGameInstance().rooms[bet.RoomId]; exist {
 
 		if info.Balance.LessThanOrEqual(decimal.NewFromInt(0)) || info.Balance.LessThan(betAmount) {
-			return fmt.Sprintf("%s balance is not enough !", info.Name), false
+
+			// return fmt.Sprintf("%s balance is not enough !", info.Name), false
+
+			resp.ErrorMessage = fmt.Sprintf("%s balance is not enough !", info.Name)
+			data, _ := json.Marshal(resp)
+
+			return data
 		}
 
 		if room.Action == start || room.Action == countDown {
 			info.Balance = info.Balance.Sub(betAmount)
-			return fmt.Sprintf("%s bet %v success ! , balance:%v", info.Name, betAmount, info.Balance), true
-		}
+			resp.Balnace = info.Balance
+			// return fmt.Sprintf("%s bet %v success ! , balance:%v", info.Name, betAmount, info.Balance), true
 
+			data, _ := json.Marshal(resp)
+
+			return data
+		}
 	}
 
-	return fmt.Sprintf("%s bet %v failed !", info.Name, betAmount), false
+	resp.ErrorMessage = fmt.Sprintf("%s bet %v failed !", info.Name, betAmount)
+	data, _ := json.Marshal(resp)
+
+	return data
 }

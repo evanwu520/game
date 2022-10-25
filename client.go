@@ -89,9 +89,8 @@ func (c *Client) readPump() {
 
 		switch handleEvent.Cmd {
 		case bet:
-			msg, _ := core.GetGameBetInstance().Bet(c.userInfo, handleEvent.Value)
 			// personal msg
-			c.send <- []byte(msg)
+			c.send <- core.GetGameBetInstance().Bet(c.userInfo, handleEvent.Value, string(bet))
 		case brocast:
 			c.hub.broadcast <- []byte(fmt.Sprintf("%s:%v", c.userInfo.Name, handleEvent.Value))
 		default:
