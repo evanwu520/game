@@ -16,8 +16,13 @@ brocast data
 {"cmd":"brocast","value":"brocast message"}
 ```
 
-bet data 
+bet data request
 
 ```json
 {"cmd":"bet","value":{"room_id":"r1","area":1,"amount":100}}
+```
+
+bet data response
+```
+{"action":"bet","bet_info":{"room_id":"r1","area":1,"amount":"100"},"balance":"900","error_message":""}
 ```
