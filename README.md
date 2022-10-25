@@ -13,21 +13,11 @@ using gorilla websocket to practice brocast game step
 
 brocast data
 ```json
-{
-  "cmd": "brocast",
-  "value": "brocast message"
-}
+{"cmd":"brocast","value":"brocast message"}
 ```
 
 bet data 
 
 ```json
-{
-  "cmd": "bet",
-  "value": {
-    "room_id": "r1",
-    "area": 1,
-    "amount": 100
-  }
-}
+{"cmd":"bet","value":{"room_id":"r1","area":1,"amount":100}}
 ```
