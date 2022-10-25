@@ -1,5 +1,6 @@
 using gorilla websocket to practice brocast game step  
 
+# room manage api
 
 - create room  curl http://127.0.0.1:8080/room?roomId=r2
 
