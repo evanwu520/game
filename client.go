@@ -10,12 +10,10 @@ import (
 	"fmt"
 	"game/core"
 	"log"
-	"math/rand"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/shopspring/decimal"
 )
 
 const (
@@ -91,8 +89,6 @@ func (c *Client) readPump() {
 		case bet:
 			// personal msg
 			c.send <- core.GetGameBetInstance().Bet(c.userInfo, handleEvent.Value, string(bet))
-		case gameList:
-
 		case brocast:
 			// brocast msg
 			c.hub.broadcast <- []byte(fmt.Sprintf("%s:%v", c.userInfo.Name, handleEvent.Value))
@@ -160,8 +156,12 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 
 	// TODO verify user
 
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), userInfo: geneGuestId()}
+	playerCore := core.GetPlayerInstance()
+
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), userInfo: playerCore.GeneGuest()}
 	client.hub.register <- client
+
+	client.send <- playerCore.PlayerDataFormat(client.userInfo)
 
 	client.hub.broadcast <- []byte(fmt.Sprintf("welecome %s", client.userInfo.Name))
 
@@ -169,20 +169,4 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
-}
-
-func geneGuestId() *core.UserInfo {
-
-	info := &core.UserInfo{}
-
-	rand.Seed(time.Now().UnixNano())
-	max := 999999999
-	min := 1
-	v := rand.Intn(max-min) + min
-
-	info.Name = fmt.Sprintf("%09d", v)
-	info.Balance = decimal.NewFromInt(1000)
-
-	return info
-
 }

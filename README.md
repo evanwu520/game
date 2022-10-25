@@ -36,6 +36,12 @@ using gorilla websocket to practice brocast game step
 ```
 
 
+- game player info
+```
+{"cmd":"game_player_info","user_info":{"name":"851592923","balance":"1000"}}
+
+```
+
 - bet
 
 ```
@@ -58,3 +64,6 @@ using gorilla websocket to practice brocast game step
 {"cmd":"game_state","room_name":"r2","action":"stop_bet","second":0}
 {"cmd":"game_state","room_name":"r2","action":"result","second":0}
 ```
+
+
+# if cmd not contain above cmd  , please direct show data

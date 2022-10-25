@@ -93,8 +93,9 @@ type allRoom struct {
 }
 
 const (
-	gameStateCmd = "game_state"
-	gameRoomCmd  = "game_room"
+	gamePlayerInfo = "game_player_info"
+	gameStateCmd   = "game_state"
+	gameRoomCmd    = "game_room"
 )
 
 type roomActionResp struct {
