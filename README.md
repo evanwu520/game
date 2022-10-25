@@ -11,20 +11,34 @@ using gorilla websocket to practice brocast game step
 ---
 
 
-# brocast 
+
+# client cmd
+
+- brocast 
 ```json
 {"cmd":"brocast","value":"brocast message"}
 ```
 
-# bet 
 
-request
+- bet
 
 ```json
 {"cmd":"bet","value":{"room_id":"r1","area":1,"amount":100}}
 ```
 
-response
+
+# server return cmd 
+
+
+- brocast 
+```json
+{"cmd":"brocast","value":"brocast message"}
+```
+
+
+- bet
+
 ```
 {"cmd":"bet","bet_info":{"room_id":"r1","area":1,"amount":"100"},"balance":"900","error_message":""}
 ```
+
