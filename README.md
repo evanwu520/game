@@ -23,6 +23,8 @@ using gorilla websocket to practice brocast game step
 
 - bet
 
+area => 1: left dice win 2: right dice win  3: tie
+
 ```json
 {"cmd":"bet","value":{"room_id":"r1","area":1,"amount":100}}
 ```
@@ -45,7 +47,6 @@ using gorilla websocket to practice brocast game step
 
 - bet
 
-area => 1: left dice win 2: right dice win  3: tie
 
 ```
 {"cmd":"bet","bet_info":{"room_id":"r1","area":1,"amount":"100"},"balance":"900","error_message":""}
