@@ -45,6 +45,8 @@ using gorilla websocket to practice brocast game step
 
 - bet
 
+area => 1: left dice win 2: right dice win  3: tie
+
 ```
 {"cmd":"bet","bet_info":{"room_id":"r1","area":1,"amount":"100"},"balance":"900","error_message":""}
 ```
@@ -60,10 +62,25 @@ using gorilla websocket to practice brocast game step
 - game state
 
 ```
-{"cmd":"game_state","room_name":"r1","action":"start_bet","data":{"second":5}}
-{"cmd":"game_state","room_name":"r1","action":"count_down","data":{"second":3}}
+{"cmd":"game_state","room_name":"r1","action":"start_bet","data":{"seconds":5}}
+
+seconds => until to stop step seconds
+
+
+{"cmd":"game_state","room_name":"r1","action":"count_down","data":{"seconds":3}}
+
+
+seconds => until to stop step seconds
+
+
 {"cmd":"game_state","room_name":"r1","action":"stop_bet","data":null}
+
+
 {"cmd":"game_state","room_name":"r2","action":"result","data":{"point":{"1":5,"2":3},"win_area":1}}
+
+point => key: area , value: dice points
+
+
 
 ```
 

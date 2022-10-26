@@ -157,7 +157,7 @@ func (g *gameManager) Run(setting *roomSetting) {
 
 					case startBet, countDown:
 						m = make(map[string]interface{})
-						m["second"] = v.WaitTime
+						m["seconds"] = v.WaitTime
 					case result:
 						// TODO
 						m = make(map[string]interface{})
