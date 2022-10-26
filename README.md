@@ -76,7 +76,7 @@ seconds => until to stop step seconds
 {"cmd":"game_state","room_name":"r1","action":"stop_bet","data":null}
 
 
-{"cmd":"game_state","room_name":"r2","action":"result","data":{"point":{"1":5,"2":3},"win_area":1}}
+{"cmd":"game_state","room_name":"r1","action":"result","data":{"point":{"1":5,"2":3},"win_area":1}}
 
 point => key: area , value: dice points
 
