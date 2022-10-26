@@ -153,11 +153,16 @@ func (m *betRecordManager) Settle(area int) []settleWinInfo {
 			winInfo.Cmd = gameResultCmd
 			winInfo.UserName = bet.UserInfo.Name
 			winInfo.RoomId = bet.RoomId
-			winInfo.WinAmount = bet.Amount.Mul(decimal.NewFromInt(2))
+
+			if area == 3 {
+				winInfo.WinAmount = bet.Amount.Mul(decimal.NewFromInt(2))
+			} else {
+				winInfo.WinAmount = bet.Amount
+			}
 
 			// TODO
 			bet.UserInfo.Lock.Lock()
-			bet.UserInfo.Balance = bet.UserInfo.Balance.Add(winInfo.WinAmount)
+			bet.UserInfo.Balance = bet.UserInfo.Balance.Add(winInfo.WinAmount).Add(bet.Amount)
 			winInfo.Balance = bet.UserInfo.Balance
 			bet.UserInfo.Lock.Unlock()
 
