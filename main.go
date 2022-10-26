@@ -7,6 +7,7 @@ package main
 import (
 	"flag"
 	"game/api"
+	"game/core"
 	"log"
 	"net/http"
 )
@@ -31,6 +32,9 @@ func main() {
 	hub := newHub()
 	go hub.run()
 	go hub.runGameListener()
+
+	// TODO init
+	core.GetGameBetInstance()
 
 	gameManager := api.NewGameManager()
 

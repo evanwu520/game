@@ -77,6 +77,16 @@ func (h *Hub) runGameListener() {
 
 			}
 			wg.Wait()
+
+		case result := <-core.ResultBrocast:
+
+			for client := range h.clients {
+
+				if client.userInfo.Name == result.UserName {
+					client.send <- result.ResultInfo
+				}
+			}
+
 		}
 	}
 }

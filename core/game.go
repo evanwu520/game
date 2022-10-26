@@ -2,11 +2,19 @@ package core
 
 import (
 	"encoding/json"
+	"math/rand"
 	"sync"
 	"time"
 )
 
 var GameBroadcast chan []byte = make(chan []byte)
+
+var ResultBrocast chan resultBrocastInfo = make(chan resultBrocastInfo)
+
+type resultBrocastInfo struct {
+	UserName   string
+	ResultInfo []byte
+}
 
 var once sync.Once
 
@@ -93,21 +101,22 @@ type allRoom struct {
 }
 
 const (
-	gamePlayerInfo = "game_player_info"
-	gameStateCmd   = "game_state"
-	gameRoomCmd    = "game_room"
+	gamePlayerInfoCmd = "game_player_info"
+	gameStateCmd      = "game_state"
+	gameRoomCmd       = "game_room"
+	gameResultCmd     = "game_result"
 )
 
 type roomActionResp struct {
-	Cmd      string        `json:"cmd"`
-	RoomName string        `json:"room_name"`
-	Action   action        `json:"action"`
-	Second   time.Duration `json:"second"`
+	Cmd      string      `json:"cmd"`
+	RoomName string      `json:"room_name"`
+	Action   action      `json:"action"`
+	Data     interface{} `json:"data"`
 }
 
 func (g *gameManager) Run(setting *roomSetting) {
 
-	go func(setting *roomSetting) {
+	go func(setting *roomSetting, betManager *betRecordManager) {
 
 		for {
 
@@ -140,21 +149,83 @@ func (g *gameManager) Run(setting *roomSetting) {
 					data.RoomName = setting.RoomId
 					data.Action = v.Action
 
-					if v.Action == startBet || v.Action == countDown {
-						data.Second = v.WaitTime
+					var m map[string]interface{}
+
+					var results []settleWinInfo
+
+					switch v.Action {
+
+					case startBet, countDown:
+						m = make(map[string]interface{})
+						m["second"] = v.WaitTime
+					case result:
+						// TODO
+						m = make(map[string]interface{})
+						pointMap := make(map[string]int)
+						pointMap["1"] = g.diceRandom()
+						pointMap["2"] = g.diceRandom()
+						m["point"] = pointMap
+
+						var winArea int
+
+						if pointMap["1"] > pointMap["2"] {
+
+							winArea = 1
+						} else if pointMap["1"] < pointMap["2"] {
+							winArea = 2
+						} else {
+							winArea = 3
+						}
+						m["win_area"] = winArea
+
+						//  結算注單
+						results = betManager.Settle(winArea)
+					default:
+
 					}
 
+					data.Data = m
 					byteData, _ := json.Marshal(data)
+
+					// all user
 					GameBroadcast <- byteData
 
-					// GameBroadcast <- []byte(fmt.Sprintf("room:%v %v", setting.RoomId, v.Action))
+					if len(results) > 0 {
+
+						// brocast win user
+
+						for _, v := range results {
+							resultBrocst := resultBrocastInfo{}
+							resultBrocst.UserName = v.UserName
+							byteData, _ := json.Marshal(v)
+							resultBrocst.ResultInfo = byteData
+
+							go func(result resultBrocastInfo) {
+
+								ResultBrocast <- result
+							}(resultBrocst)
+						}
+
+					}
+
+					m = nil
 
 					time.Sleep(v.WaitTime * time.Second)
 				}
 			}
 		}
 
-	}(setting)
+	}(setting, CreateOrGetRoomBetRecordManger(setting.RoomId))
+}
+
+func (g *gameManager) diceRandom() int {
+	min := 1
+	max := 6
+
+	s1 := rand.NewSource(time.Now().UnixNano() + int64(rand.Intn(1000)))
+	r1 := rand.New(s1)
+
+	return r1.Intn(max-min) + min
 }
 
 func (g *gameManager) Stop(roomId string) {

@@ -60,10 +60,17 @@ using gorilla websocket to practice brocast game step
 - game state
 
 ```
-{"cmd":"game_state","room_name":"r2","action":"start_bet","second":5}
-{"cmd":"game_state","room_name":"r2","action":"count_down","second":3}
-{"cmd":"game_state","room_name":"r2","action":"stop_bet","second":0}
-{"cmd":"game_state","room_name":"r2","action":"result","second":0}
+{"cmd":"game_state","room_name":"r1","action":"start_bet","data":{"second":5}}
+{"cmd":"game_state","room_name":"r1","action":"count_down","data":{"second":3}}
+{"cmd":"game_state","room_name":"r1","action":"stop_bet","data":null}
+{"cmd":"game_state","room_name":"r2","action":"result","data":{"point":{"1":5,"2":3},"win_area":1}}
+
+```
+
+- game result
+
+```json
+{"cmd":"game_result","user_name":"847127347","room_id":"r2","win_amount":"20","balance":"1010"}
 ```
 
 

@@ -10,6 +10,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// TODO handle all user
+
 type UserInfo struct {
 	Name    string          `json:"name"`
 	Balance decimal.Decimal `json:"balance"`
@@ -54,7 +56,7 @@ type gamePlayer struct {
 func (*player) PlayerDataFormat(info *UserInfo) []byte {
 
 	resp := &gamePlayer{}
-	resp.Cmd = gamePlayerInfo
+	resp.Cmd = gamePlayerInfoCmd
 	resp.PlayerInfo = info
 
 	dataByte, _ := json.Marshal(resp)
