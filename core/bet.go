@@ -63,19 +63,16 @@ func (g *gameBet) Bet(info *UserInfo, v interface{}, cmd string) []byte {
 	byte, _ := json.Marshal(v)
 	json.Unmarshal(byte, bet)
 
-	info.Lock.Lock()
-	defer info.Lock.Unlock()
-
 	betAmount := bet.Amount
 
 	resp := &betResponse{}
 	resp.Cmd = cmd
 	resp.BetInfo = bet
-	resp.Balnace = info.Balance
+	resp.Balnace = info.GetBalance()
 
 	if room, exist := GetGameInstance().rooms[bet.RoomId]; exist {
 
-		if info.Balance.LessThanOrEqual(decimal.NewFromInt(0)) || info.Balance.LessThan(betAmount) {
+		if info.GetBalance().LessThanOrEqual(decimal.NewFromInt(0)) || info.GetBalance().LessThan(betAmount) {
 
 			resp.ErrorMessage = fmt.Sprintf("%s balance is not enough !", info.Name)
 			data, _ := json.Marshal(resp)
@@ -84,8 +81,8 @@ func (g *gameBet) Bet(info *UserInfo, v interface{}, cmd string) []byte {
 		}
 
 		if room.Action == startBet || room.Action == countDown {
-			info.Balance = info.Balance.Sub(betAmount)
-			resp.Balnace = info.Balance
+
+			resp.Balnace = info.SubBalance(betAmount)
 			data, _ := json.Marshal(resp)
 
 			// TODO define area and verify
@@ -160,12 +157,7 @@ func (m *betRecordManager) Settle(area int) []settleWinInfo {
 				winInfo.WinAmount = bet.Amount
 			}
 
-			// TODO
-			bet.UserInfo.Lock.Lock()
-			bet.UserInfo.Balance = bet.UserInfo.Balance.Add(winInfo.WinAmount).Add(bet.Amount)
-			winInfo.Balance = bet.UserInfo.Balance
-			bet.UserInfo.Lock.Unlock()
-
+			winInfo.Balance = bet.UserInfo.AddBalance(bet.Amount.Add(winInfo.WinAmount))
 			winResult = append(winResult, winInfo)
 
 		} else {

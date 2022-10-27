@@ -41,7 +41,7 @@ area => 1: left dice win 2: right dice win  3: tie
 
 - game player info
 ```
-{"cmd":"game_player_info","user_info":{"name":"851592923","balance":"1000"}}
+{"cmd":"game_player_info","user_name":"458097265","balance":"1000","room_list":["r1"]}
 
 ```
 

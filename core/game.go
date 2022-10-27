@@ -86,7 +86,7 @@ func (g *gameManager) NewRoom(roomId string) {
 	roomObj := allRoom{}
 	roomObj.Cmd = gameRoomCmd
 
-	for v, _ := range g.rooms {
+	for v := range g.rooms {
 		roomObj.Rooms = append(roomObj.Rooms, v)
 	}
 

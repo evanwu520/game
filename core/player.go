@@ -14,7 +14,7 @@ import (
 
 type UserInfo struct {
 	Name    string          `json:"name"`
-	Balance decimal.Decimal `json:"balance"`
+	balance decimal.Decimal `json:"balance"`
 	Lock    sync.RWMutex    `json:"-"`
 }
 
@@ -42,25 +42,52 @@ func (*player) GeneGuest() *UserInfo {
 	v := rand.Intn(max-min) + min
 
 	info.Name = fmt.Sprintf("%09d", v)
-	info.Balance = decimal.NewFromInt(1000)
+	info.AddBalance(decimal.NewFromInt(1000))
 
 	return info
 
 }
 
 type gamePlayer struct {
-	Cmd        string    `json:"cmd"`
-	PlayerInfo *UserInfo `json:"user_info"`
+	Cmd      string          `json:"cmd"`
+	UserName string          `json:"user_name"`
+	Balance  decimal.Decimal `json:"balance"`
+	RoomList []string        `json:"room_list"`
 }
 
 func (*player) PlayerDataFormat(info *UserInfo) []byte {
 
 	resp := &gamePlayer{}
 	resp.Cmd = gamePlayerInfoCmd
-	resp.PlayerInfo = info
+	resp.UserName = info.Name
+	resp.Balance = info.balance
+
+	for roomKey := range GetGameInstance().rooms {
+		resp.RoomList = append(resp.RoomList, roomKey)
+	}
 
 	dataByte, _ := json.Marshal(resp)
 
 	return dataByte
 
+}
+
+func (u *UserInfo) AddBalance(amount decimal.Decimal) decimal.Decimal {
+	u.Lock.Lock()
+	defer u.Lock.Unlock()
+	u.balance = u.balance.Add(amount)
+	return u.balance
+}
+
+func (u *UserInfo) SubBalance(amount decimal.Decimal) decimal.Decimal {
+	u.Lock.Lock()
+	defer u.Lock.Unlock()
+	u.balance = u.balance.Sub(amount)
+	return u.balance
+}
+
+func (u *UserInfo) GetBalance() decimal.Decimal {
+	u.Lock.Lock()
+	defer u.Lock.Unlock()
+	return u.balance
 }
