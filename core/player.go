@@ -52,7 +52,7 @@ type gamePlayer struct {
 	Cmd      string          `json:"cmd"`
 	UserName string          `json:"user_name"`
 	Balance  decimal.Decimal `json:"balance"`
-	RoomList []string        `json:"room_list"`
+	RoomList []roomStep      `json:"room_list"`
 }
 
 func (*player) PlayerDataFormat(info *UserInfo) []byte {
@@ -62,8 +62,12 @@ func (*player) PlayerDataFormat(info *UserInfo) []byte {
 	resp.UserName = info.Name
 	resp.Balance = info.balance
 
-	for roomKey := range GetGameInstance().rooms {
-		resp.RoomList = append(resp.RoomList, roomKey)
+	//TODO
+	for roomKey, roomValue := range GetGameInstance().rooms {
+		room := roomStep{}
+		room.RoomId = roomKey
+		room.Action = roomValue.Action
+		resp.RoomList = append(resp.RoomList, room)
 	}
 
 	dataByte, _ := json.Marshal(resp)

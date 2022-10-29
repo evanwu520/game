@@ -132,24 +132,27 @@ type settleWinInfo struct {
 	Balance   decimal.Decimal `json:"balance"`
 }
 
-func (m *betRecordManager) Settle(area int) []settleWinInfo {
+func (m *betRecordManager) Settle(area int) []*settleWinInfo {
 
 	m.lock.Lock()
 	defer m.lock.Unlock()
 
-	var winResult []settleWinInfo
+	userSummary := make(map[string]*settleWinInfo)
+	userMap := make(map[string]*UserInfo)
+
+	var winResult []*settleWinInfo
 
 	for _, bet := range m.reocrd {
+
+		winInfo := &settleWinInfo{}
+		winInfo.Cmd = gameResultCmd
+		winInfo.UserName = bet.UserInfo.Name
+		winInfo.RoomId = bet.RoomId
 
 		// TODO
 		if bet.Area == area {
 			// win
 			fmt.Println(bet.RoomId, bet.UserInfo.Name, bet.Area, area, "win")
-
-			winInfo := settleWinInfo{}
-			winInfo.Cmd = gameResultCmd
-			winInfo.UserName = bet.UserInfo.Name
-			winInfo.RoomId = bet.RoomId
 
 			if area == 3 {
 				winInfo.WinAmount = bet.Amount.Mul(decimal.NewFromInt(2))
@@ -158,12 +161,26 @@ func (m *betRecordManager) Settle(area int) []settleWinInfo {
 			}
 
 			winInfo.Balance = bet.UserInfo.AddBalance(bet.Amount.Add(winInfo.WinAmount))
-			winResult = append(winResult, winInfo)
 
 		} else {
 			// lose
 			fmt.Println(bet.RoomId, bet.UserInfo.Name, bet.Area, area, "lose")
+			winInfo.WinAmount = bet.Amount.Mul(decimal.NewFromInt(-1))
+			winInfo.Balance = bet.UserInfo.GetBalance()
 		}
+
+		if _, exist := userSummary[bet.UserInfo.Name]; !exist {
+			userSummary[bet.UserInfo.Name] = winInfo
+			userMap[bet.UserInfo.Name] = bet.UserInfo
+		} else {
+			userSummary[bet.UserInfo.Name].WinAmount = userSummary[bet.UserInfo.Name].WinAmount.Add(winInfo.WinAmount)
+		}
+
+	}
+
+	for k, v := range userSummary {
+		v.Balance = userMap[k].GetBalance()
+		winResult = append(winResult, v)
 
 	}
 

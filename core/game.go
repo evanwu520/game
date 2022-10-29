@@ -23,6 +23,11 @@ type gameManager struct {
 	lock  sync.RWMutex
 }
 
+type roomStep struct {
+	RoomId string `json:"room_id"`
+	Action action `json:"action"`
+}
+
 var instance *gameManager
 
 func GetGameInstance() *gameManager {
@@ -38,10 +43,10 @@ func (g *gameManager) getStep() []*Stage {
 
 	var stages []*Stage
 
-	stages = append(stages, &Stage{Action: startBet, WaitTime: 5})
-	stages = append(stages, &Stage{Action: countDown, WaitTime: 3})
+	stages = append(stages, &Stage{Action: startBet, WaitTime: 12})
+	stages = append(stages, &Stage{Action: countDown, WaitTime: 5})
 	stages = append(stages, &Stage{Action: stopBet, WaitTime: 1})
-	stages = append(stages, &Stage{Action: result, WaitTime: 3})
+	stages = append(stages, &Stage{Action: result, WaitTime: 4})
 
 	return stages
 }
@@ -151,7 +156,7 @@ func (g *gameManager) Run(setting *roomSetting) {
 
 					var m map[string]interface{}
 
-					var results []settleWinInfo
+					var results []*settleWinInfo
 
 					switch v.Action {
 
@@ -192,8 +197,7 @@ func (g *gameManager) Run(setting *roomSetting) {
 
 					if len(results) > 0 {
 
-						// brocast win user
-
+						// brocast result to  user
 						for _, v := range results {
 							resultBrocst := resultBrocastInfo{}
 							resultBrocst.UserName = v.UserName

@@ -46,7 +46,7 @@ when connect , the info will return client
 room_list => all room from before to now
 
 ```
-{"cmd":"game_player_info","user_name":"458097265","balance":"1000","room_list":["r1"]}
+{"cmd":"game_player_info","user_name":"824377316","balance":"1000","room_list":[{"room_id":"r2","action":"start_bet"}]}
 
 ```
 
