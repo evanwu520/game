@@ -19,13 +19,17 @@ type resultBrocastInfo struct {
 var once sync.Once
 
 type gameManager struct {
-	rooms map[string]*roomSetting
-	lock  sync.RWMutex
+	rooms           map[string]*roomSetting
+	lock            sync.RWMutex
+	roomsStatus     map[string]*roomStatus
+	roomsStatusLock sync.RWMutex
 }
 
-type roomStep struct {
-	RoomId string `json:"room_id"`
-	Action action `json:"action"`
+type roomStatus struct {
+	RoomId string       `json:"room_id"`
+	Action action       `json:"action"`
+	Status interface{}  `json:"status"`
+	lock   sync.RWMutex `json:"-"`
 }
 
 var instance *gameManager
@@ -35,6 +39,7 @@ func GetGameInstance() *gameManager {
 	once.Do(func() {
 		instance = &gameManager{}
 		instance.rooms = make(map[string]*roomSetting)
+		instance.roomsStatus = make(map[string]*roomStatus)
 	})
 	return instance
 }
@@ -86,11 +91,16 @@ func (g *gameManager) NewRoom(roomId string) {
 	defer g.lock.Unlock()
 	g.rooms[roomId] = room
 
-	g.Run(room)
+	status := &roomStatus{}
+	status.RoomId = roomId
+	g.roomsStatus[roomId] = status
+
+	g.Run(room, status)
 
 	roomObj := allRoom{}
 	roomObj.Cmd = gameRoomCmd
 
+	// TODO
 	for v := range g.rooms {
 		roomObj.Rooms = append(roomObj.Rooms, v)
 	}
@@ -119,9 +129,9 @@ type roomActionResp struct {
 	Data     interface{} `json:"data"`
 }
 
-func (g *gameManager) Run(setting *roomSetting) {
+func (g *gameManager) Run(setting *roomSetting, status *roomStatus) {
 
-	go func(setting *roomSetting, betManager *betRecordManager) {
+	go func(setting *roomSetting, betManager *betRecordManager, status *roomStatus) {
 
 		for {
 
@@ -130,12 +140,12 @@ func (g *gameManager) Run(setting *roomSetting) {
 
 				if v {
 
-					setting.Action = stop
-
 					data := roomActionResp{}
 					data.Cmd = gameStateCmd
 					data.RoomName = setting.RoomId
 					data.Action = stop
+
+					status.changeRoomStatus(stop, nil)
 
 					// fmt.Println(setting.RoomId + "stop")
 
@@ -148,6 +158,9 @@ func (g *gameManager) Run(setting *roomSetting) {
 			default:
 				for _, v := range setting.Step {
 
+					status.Action = v.Action
+
+					//
 					setting.Action = v.Action
 					data := roomActionResp{}
 					data.Cmd = gameStateCmd
@@ -163,6 +176,27 @@ func (g *gameManager) Run(setting *roomSetting) {
 					case startBet, countDown:
 						m = make(map[string]interface{})
 						m["seconds"] = v.WaitTime
+
+						// keep room status
+						go func(seconds time.Duration) {
+							for i := int(seconds); i >= 0; i-- {
+
+								if i > 0 {
+									obj := struct {
+										Seconds int `json:"seconds"`
+									}{Seconds: i}
+									status.changeRoomStatus(v.Action, obj)
+									time.Sleep(1 * time.Second)
+								} else {
+									status.changeRoomStatus(v.Action, nil)
+								}
+
+							}
+
+						}(v.WaitTime)
+
+					case stop:
+						status.changeRoomStatus(v.Action, nil)
 					case result:
 						// TODO
 						m = make(map[string]interface{})
@@ -183,8 +217,17 @@ func (g *gameManager) Run(setting *roomSetting) {
 						}
 						m["win_area"] = winArea
 
+						obj := struct {
+							Dice1   int `json:"dice1"`
+							Dice2   int `json:"dice2"`
+							WinArea int `json:"win_area"`
+						}{Dice1: pointMap["1"], Dice2: pointMap["2"], WinArea: winArea}
+
+						status.changeRoomStatus(v.Action, obj)
+
 						//  結算注單
 						results = betManager.Settle(winArea)
+
 					default:
 
 					}
@@ -219,7 +262,7 @@ func (g *gameManager) Run(setting *roomSetting) {
 			}
 		}
 
-	}(setting, CreateOrGetRoomBetRecordManger(setting.RoomId))
+	}(setting, CreateOrGetRoomBetRecordManger(setting.RoomId), status)
 }
 
 func (g *gameManager) diceRandom() int {
@@ -252,4 +295,29 @@ func (g *gameManager) Start(roomId string) {
 
 		v.Start <- true
 	}
+}
+
+func (g *gameManager) getAllRoomStatus() map[string]*roomStatus {
+
+	g.roomsStatusLock.RLock()
+	defer g.roomsStatusLock.RUnlock()
+
+	return g.roomsStatus
+}
+
+func (g *gameManager) getRoomStatus(roomId string) *roomStatus {
+
+	g.roomsStatusLock.Lock()
+	defer g.roomsStatusLock.Unlock()
+
+	return g.roomsStatus[roomId]
+}
+
+func (r *roomStatus) changeRoomStatus(step action, status interface{}) {
+
+	r.lock.Lock()
+	defer r.lock.Unlock()
+
+	r.Action = step
+	r.Status = status
 }
