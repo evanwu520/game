@@ -14,7 +14,7 @@ export enum DemoRoomAction {
 
 export const ActionDisplayName = {
   [DemoRoomAction.init]: '初始化',
-  [DemoRoomAction.start_bet]: '開始下注',
+  [DemoRoomAction.start_bet]: '下注中',
   [DemoRoomAction.count_down]: '下注中',
   [DemoRoomAction.stop_bet]: '結束下注',
   [DemoRoomAction.result]: '結算中',
@@ -47,7 +47,7 @@ export class DemoMessage {
     return this.obj.user_name
   }
 
-  get balance(): number | undefined {
+  get balance(): string | undefined {
     return this.obj.balance
   }
 
@@ -58,6 +58,10 @@ export class DemoMessage {
 
   get action(): DemoRoomAction | undefined {
     return this.obj.action
+  }
+
+  get data(): any {
+    return this.obj.data
   }
 
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====

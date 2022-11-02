@@ -1,8 +1,14 @@
 
 <ng-container *ngIf="viewModel">
 
-  <label>房名: {{ viewModel.name }}</label>
-  <label>動作: {{ viewModel.actionName }}</label>
+  <label>房名: {{ viewModel.name }}</label>&nbsp;
+  <label>動作: {{ viewModel.actionName }}</label><br>
 
+  <ng-container *ngFor="let betArea of viewModel.betAreaList">
+
+    <div class="bet-area">下注區:{{ betArea.id }}</div>
+
+  </ng-container>
+  <hr>
 </ng-container>
 
