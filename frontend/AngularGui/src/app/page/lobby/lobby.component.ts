@@ -77,6 +77,10 @@ export class LobbyComponent implements OnInit {
           }
         }
         else if (event.cmd === DemoCmd.bet) {
+          if (event.error_message) {
+            console.log(event.error_message)
+            return
+          }
           console.log(`下注資料:${JSON.stringify(event.obj, null, 2)}`)
           this.viewModel.balance = event.balance
           let bet_info = event.bet_info

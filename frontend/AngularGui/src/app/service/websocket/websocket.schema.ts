@@ -71,5 +71,9 @@ export class DemoMessage {
     return this.obj.bet_info
   }
 
+  get error_message(): string {
+    return this.obj.error_message
+  }
+
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
 }
