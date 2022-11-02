@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DemoCmd } from 'src/app/service/websocket/websocket.schema';
+import { DemoCmd, DemoRoomAction } from 'src/app/service/websocket/websocket.schema';
 import { WebsocketService } from 'src/app/service/websocket/websocket.service';
 import { LobbyViewModel } from './lobby.viewmodel';
 import { RoomViewModel } from '../../component/room/room.viewmodel';
@@ -48,6 +48,30 @@ export class LobbyComponent implements OnInit {
             let room = this.viewModel.roomList.find(ele => ele.name === event.room_name)
             if (room) {
               room.action = event.action
+              if (event.data && event.data.seconds) {
+                room.targetTime = new Date(new Date().getTime() + event.data.seconds * 1000);
+              }
+              if (event.action === DemoRoomAction.start_bet) {
+                for (const betArea of room.betAreaList) {
+                  betArea.point = 0
+                  betArea.isWin = false
+                }
+              }
+              else if (event.action === DemoRoomAction.result) {
+                let pointDict = event.data.point
+                for (const idStr in pointDict) {
+                  const point = pointDict[idStr];
+                  let id = parseInt(idStr)
+                  let betArea = room.betAreaList.find(ele => ele.id === id)
+                  if (betArea) {
+                    betArea.point = point
+                  }
+                }
+                let win_area = event.data.win_area
+                for (const betArea of room.betAreaList) {
+                  betArea.isWin = (betArea.id === win_area)
+                }
+              }
             }
           }
         }
