@@ -5,10 +5,19 @@ export enum DemoCmd {
 }
 
 export enum DemoRoomAction {
-  start_bet = 'stop_bet',
+  init = 'init',
+  start_bet = 'start_bet',
   count_down = 'count_down',
   stop_bet = 'stop_bet',
   result = 'result',
+}
+
+export const ActionDisplayName = {
+  [DemoRoomAction.init]: '初始化',
+  [DemoRoomAction.start_bet]: '開始下注',
+  [DemoRoomAction.count_down]: '下注中',
+  [DemoRoomAction.stop_bet]: '結束下注',
+  [DemoRoomAction.result]: '結算中',
 }
 
 export class DemoMessage {

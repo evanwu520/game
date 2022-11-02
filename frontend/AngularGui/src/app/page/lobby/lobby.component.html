@@ -1,2 +1,11 @@
 
 <button (click)="startConnect()">連線</button>
+<hr>
+
+<ng-container *ngFor="let room of viewModel.roomList">
+
+  <app-room
+    [viewModel]='room'
+  ></app-room>
+
+</ng-container>
