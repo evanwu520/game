@@ -10,7 +10,8 @@ export class WebsocketService {
   // 第三方測試 http://coolaf.com/tool/chattest
 
   public conn: WebSocket
-  private host = 'ws://123.193.145.165:1002/ws'
+  // private host = `ws://123.193.145.165:1002/ws`
+  private host = `ws://${document.location.host}/ws`
 
   onMessage$ = new Subject<DemoMessage>();
 
