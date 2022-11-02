@@ -77,6 +77,7 @@ export class LobbyComponent implements OnInit {
           }
         }
         else if (event.cmd === DemoCmd.bet) {
+          console.log(`下注資料:${JSON.stringify(event.obj, null, 2)}`)
           this.viewModel.balance = event.balance
           let bet_info = event.bet_info
           let room = this.viewModel.roomList.find(ele => ele.name === bet_info.room_id)
@@ -86,6 +87,10 @@ export class LobbyComponent implements OnInit {
               betArea.amount = parseInt(bet_info.amount)
             }
           }
+        }
+        else if (event.cmd === DemoCmd.game_result) {
+          console.log(`結算資料:${JSON.stringify(event.obj, null, 2)}`)
+          this.viewModel.balance = event.balance
         }
         else {
           console.log(event.cmd, event.obj)

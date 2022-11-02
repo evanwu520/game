@@ -28,15 +28,14 @@ export class WebsocketService {
       this.conn.onmessage = (evt: MessageEvent) => {
 
         let data: string = evt.data
-        if (data.includes('wel')) {
-          // 如果 含有 welecome 需要去掉
-          data = data.split('wel')[0]
-        }
-        if (data) {
-          // 有純的 welecome 訊息
-          let mes = new DemoMessage(data)
-          this.onMessage$.next(mes)
-          // console.log(mes)
+        let split = data.split('\n')
+        for (const subDate of split) {
+          if (subDate && !subDate.includes('wel')) {
+            // 有純的 welecome 訊息
+            let mes = new DemoMessage(subDate)
+            this.onMessage$.next(mes)
+            // console.log(mes)
+          }
         }
       };
     } else {

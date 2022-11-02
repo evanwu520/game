@@ -3,6 +3,7 @@ export enum DemoCmd {
   game_player_info = 'game_player_info',
   game_state = 'game_state',
   bet = 'bet',
+  game_result = 'game_result',
 }
 
 export enum DemoRoomAction {
