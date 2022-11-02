@@ -16,17 +16,18 @@ export class RoomViewModel {
     return ActionDisplayName[this.action]
   }
 
-
   betAreaList: BetAreaViewModel[] = AllBetAreaId.map(id => new BetAreaViewModel(id))
-
 }
 
 const AllBetAreaId = [1, 2]
-class BetAreaViewModel {
+export class BetAreaViewModel {
 
   point = 0
+  amount = 0
   isWin = false
 
-  constructor(public id: number = 0) { }
+  constructor(
+    public id: number
+  ) { }
 
 }

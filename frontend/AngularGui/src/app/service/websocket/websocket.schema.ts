@@ -1,7 +1,8 @@
 
 export enum DemoCmd {
   game_player_info = 'game_player_info',
-  game_state = 'game_state'
+  game_state = 'game_state',
+  bet = 'bet',
 }
 
 export enum DemoRoomAction {
@@ -62,6 +63,11 @@ export class DemoMessage {
 
   get data(): any {
     return this.obj.data
+  }
+
+  // 下注
+  get bet_info(): any {
+    return this.obj.bet_info
   }
 
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====

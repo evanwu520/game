@@ -7,8 +7,9 @@
 
   <ng-container *ngFor="let betArea of viewModel.betAreaList">
 
-    <div class="bet-area">
+    <div class="bet-area" (click)="areaClick.emit(betArea)">
       <label>下注區:{{ betArea.id }}</label><br>
+      <label>壓注:{{ betArea.amount }}</label><br>
       <label *ngIf="betArea.point !== 0">點數:{{ betArea.point }}</label><br>
       <label *ngIf="betArea.isWin">WIN</label>
       <label *ngIf="!betArea.isWin">_</label>

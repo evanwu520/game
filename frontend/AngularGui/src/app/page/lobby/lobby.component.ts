@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DemoCmd, DemoRoomAction } from 'src/app/service/websocket/websocket.schema';
 import { WebsocketService } from 'src/app/service/websocket/websocket.service';
 import { LobbyViewModel } from './lobby.viewmodel';
-import { RoomViewModel } from '../../component/room/room.viewmodel';
+import { BetAreaViewModel, RoomViewModel } from '../../component/room/room.viewmodel';
 
 @Component({
   selector: 'app-lobby',
@@ -54,6 +54,7 @@ export class LobbyComponent implements OnInit {
               if (event.action === DemoRoomAction.start_bet) {
                 for (const betArea of room.betAreaList) {
                   betArea.point = 0
+                  betArea.amount = 0
                   betArea.isWin = false
                 }
               }
@@ -75,6 +76,17 @@ export class LobbyComponent implements OnInit {
             }
           }
         }
+        else if (event.cmd === DemoCmd.bet) {
+          this.viewModel.balance = event.balance
+          let bet_info = event.bet_info
+          let room = this.viewModel.roomList.find(ele => ele.name === bet_info.room_id)
+          if (room) {
+            let betArea = room.betAreaList.find(ele => ele.id === bet_info.area)
+            if (betArea) {
+              betArea.amount = parseInt(bet_info.amount)
+            }
+          }
+        }
         else {
           console.log(event.cmd, event.obj)
         }
@@ -83,5 +95,10 @@ export class LobbyComponent implements OnInit {
     else {
       console.log('連線已存在')
     }
+  }
+
+  areaClick(room: RoomViewModel, betArea: BetAreaViewModel) {
+    // console.log(room, betArea)
+    this.websocket.sendBet(room.name, betArea.id, this.viewModel.selectPoint)
   }
 }

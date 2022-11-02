@@ -1,7 +1,7 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { RoomViewModel } from './room.viewmodel';
+import { BetAreaViewModel, RoomViewModel } from './room.viewmodel';
 
 @Component({
   selector: 'app-room',
@@ -12,6 +12,9 @@ export class RoomComponent implements OnInit, OnDestroy {
 
   @Input()
   viewModel: RoomViewModel
+
+  @Output()
+  areaClick = new EventEmitter<BetAreaViewModel>()
 
   private ngUnsubscribe = new Subject<void>();
 

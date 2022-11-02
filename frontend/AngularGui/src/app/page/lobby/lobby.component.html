@@ -7,6 +7,14 @@
 
   <label>使用者:{{ viewModel.userName }}</label><br>
   <label>餘額:{{ viewModel.balance }}</label>
+
+  <ng-container *ngFor="let point of viewModel.optionalPoint">
+    <button (click)="viewModel.selectPoint = point">
+      <label *ngIf="viewModel.selectPoint === point">*</label>
+      {{point}}
+    </button>
+  </ng-container>
+
 </ng-container>
 
 <hr>
@@ -15,6 +23,7 @@
 
   <app-room
     [viewModel]='room'
+    (areaClick)="areaClick(room, $event)"
   ></app-room>
 
 </ng-container>
