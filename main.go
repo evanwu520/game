@@ -44,10 +44,12 @@ func main() {
 
 	http.HandleFunc("/start", gameManager.Start)
 
-	http.HandleFunc("/", serveHome)
+	// http.HandleFunc("/", serveHome)
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)
 	})
+
+	http.Handle("/", http.FileServer(http.Dir("./static")))
 	err := http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

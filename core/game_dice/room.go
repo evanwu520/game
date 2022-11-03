@@ -35,7 +35,7 @@ func (g *gameDice) getStep() []*game.Stage {
 	var stages []*game.Stage
 
 	stages = append(stages, &game.Stage{Action: game.Action(startBet), WaitTime: 12})
-	stages = append(stages, &game.Stage{Action: countDown, WaitTime: 5})
+	// stages = append(stages, &game.Stage{Action: countDown, WaitTime: 5})
 	stages = append(stages, &game.Stage{Action: stopBet, WaitTime: 1})
 	stages = append(stages, &game.Stage{Action: result, WaitTime: 4})
 

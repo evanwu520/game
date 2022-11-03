@@ -38,7 +38,7 @@ type Stage struct {
 
 type RoomStatus struct {
 	RoomId string       `json:"room_id"`
-	Action Action       `json:"Action"`
+	Action Action       `json:"action"`
 	Status interface{}  `json:"status"`
 	lock   sync.RWMutex `json:"-"`
 }
@@ -55,6 +55,6 @@ func (r *RoomStatus) ChangeRoomStatus(step Action, status interface{}) {
 type RoomActionResp struct {
 	Cmd      string      `json:"cmd"`
 	RoomName string      `json:"room_name"`
-	Action   Action      `json:"Action"`
+	Action   Action      `json:"action"`
 	Data     interface{} `json:"data"`
 }
