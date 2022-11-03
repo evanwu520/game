@@ -5,7 +5,7 @@
 package main
 
 import (
-	"game/core"
+	"game/core/game"
 	"sync"
 )
 
@@ -64,7 +64,7 @@ func (h *Hub) runGameListener() {
 
 	for {
 		select {
-		case bytes := <-core.GameBroadcast:
+		case bytes := <-game.GameBroadcast:
 			var wg sync.WaitGroup
 
 			for client := range h.clients {
@@ -78,7 +78,7 @@ func (h *Hub) runGameListener() {
 			}
 			wg.Wait()
 
-		case result := <-core.ResultBrocast:
+		case result := <-game.ResultBrocast:
 
 			for client := range h.clients {
 

@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"game/core"
+	"game/core/player"
 	"log"
 	"net/http"
 	"time"
@@ -48,7 +49,7 @@ type Client struct {
 	// The websocket connection.
 	conn *websocket.Conn
 
-	userInfo *core.UserInfo
+	userInfo *player.UserInfo
 
 	// Buffered channel of outbound messages.
 	send chan []byte
@@ -157,12 +158,13 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 
 	// TODO verify user
 
-	playerCore := core.GetPlayerInstance()
+	playerCore := player.GetPlayerInstance()
 
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), userInfo: playerCore.GeneGuest()}
 	client.hub.register <- client
 
 	client.send <- playerCore.PlayerDataFormat(client.userInfo)
+	client.send <- core.GetGameInstance().ListRooms()
 
 	client.hub.broadcast <- []byte(fmt.Sprintf("welecome %s", client.userInfo.Name))
 

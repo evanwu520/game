@@ -1,8 +1,9 @@
-package core
+package player
 
 import (
 	"encoding/json"
 	"fmt"
+	"game/core/game"
 	"math/rand"
 	"sync"
 	"time"
@@ -52,19 +53,19 @@ type gamePlayer struct {
 	Cmd      string          `json:"cmd"`
 	UserName string          `json:"user_name"`
 	Balance  decimal.Decimal `json:"balance"`
-	RoomList []*roomStatus   `json:"room_list"`
+	// RoomList []*game.RoomStatus `json:"room_list"`
 }
 
 func (*player) PlayerDataFormat(info *UserInfo) []byte {
 
 	resp := &gamePlayer{}
-	resp.Cmd = gamePlayerInfoCmd
+	resp.Cmd = game.GamePlayerInfoCmd
 	resp.UserName = info.Name
 	resp.Balance = info.balance
 
-	for _, v := range GetGameInstance().roomsStatus {
-		resp.RoomList = append(resp.RoomList, v)
-	}
+	// for _, v := range core.GetGameInstance().GetAllRoomStatus() {
+	// 	resp.RoomList = append(resp.RoomList, v)
+	// }
 
 	dataByte, _ := json.Marshal(resp)
 
