@@ -1,0 +1,29 @@
+
+<ng-container *ngIf="!viewModel.userName">
+  <button (click)="startConnect()">連線</button>
+</ng-container>
+
+<ng-container *ngIf="viewModel.userName">
+
+  <label>使用者:{{ viewModel.userName }}</label><br>
+  <label>餘額:{{ viewModel.balance }}</label>
+
+  <ng-container *ngFor="let point of viewModel.optionalPoint">
+    <button (click)="viewModel.selectPoint = point">
+      <label *ngIf="viewModel.selectPoint === point">*</label>
+      {{point}}
+    </button>
+  </ng-container>
+
+</ng-container>
+
+<hr>
+
+<ng-container *ngFor="let room of viewModel.roomList">
+
+  <app-room
+    [viewModel]='room'
+    (areaClick)="areaClick(room, $event)"
+  ></app-room>
+
+</ng-container>

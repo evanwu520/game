@@ -1,0 +1,21 @@
+
+<ng-container *ngIf="viewModel">
+
+  <label>房名: {{ viewModel.name }}</label>&nbsp;
+  <label>動作: {{ viewModel.actionName }}</label><br>
+  <label>倒數: {{ viewModel.remaindTime }}秒</label><br>
+
+  <ng-container *ngFor="let betArea of viewModel.betAreaList">
+
+    <div class="bet-area" (click)="areaClick.emit(betArea)">
+      <label>下注區:{{ betArea.id }}</label><br>
+      <label>壓注:{{ betArea.amount }}</label><br>
+      <label *ngIf="betArea.point !== 0">點數:{{ betArea.point }}</label><br>
+      <label *ngIf="betArea.isWin">WIN</label>
+      <label *ngIf="!betArea.isWin">_</label>
+    </div>
+
+  </ng-container>
+  <hr>
+</ng-container>
+
