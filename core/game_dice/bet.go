@@ -56,19 +56,76 @@ type betResponse struct {
 	ErrorMessage string          `json:"error_message"`
 }
 
-func (g *gameBet) Bet(rooms map[string]*game.RoomSetting, info *player.UserInfo, v interface{}, cmd string) []byte {
+// TODO remove
+// func (g *gameBet) Bet(rooms map[string]*game.RoomSetting, info *player.UserInfo, v interface{}, cmd string) []byte {
+
+// 	bet := &betInfo{}
+
+// 	byte, _ := json.Marshal(v)
+// 	json.Unmarshal(byte, bet)
+
+// 	betAmount := bet.Amount
+
+// 	resp := &betResponse{}
+// 	resp.Cmd = cmd
+// 	resp.BetInfo = bet
+// 	resp.Balnace = info.GetBalance()
+
+// 	if room, exist := rooms[bet.RoomId]; exist {
+
+// 		if info.GetBalance().LessThanOrEqual(decimal.NewFromInt(0)) || info.GetBalance().LessThan(betAmount) {
+
+// 			resp.ErrorMessage = fmt.Sprintf("%s balance is not enough !", info.Name)
+// 			data, _ := json.Marshal(resp)
+
+// 			return data
+// 		}
+
+// 		if room.Action == startBet || room.Action == countDown {
+
+// 			resp.Balnace = info.SubBalance(betAmount)
+// 			data, _ := json.Marshal(resp)
+
+// 			// TODO define area and verify
+// 			record := betRecord{}
+// 			record.UserInfo = info
+// 			record.RoomId = bet.RoomId
+// 			record.Area = bet.Area
+// 			record.Amount = betAmount
+
+// 			CreateOrGetRoomBetRecordManger(record.RoomId).AddRecord(record)
+
+// 			return data
+// 		}
+
+// 	}
+
+// 	resp.ErrorMessage = fmt.Sprintf("%s bet %v failed !", info.Name, betAmount)
+// 	data, _ := json.Marshal(resp)
+
+// 	return data
+
+// }
+
+type BetApiResponse struct {
+	BetInfo      *betInfo        `json:"bet_info"`
+	Balnace      decimal.Decimal `json:"balance"`
+	UserTotalBet *useTotalBet    `json:"user_total_bet"`
+	ErrorMessage string          `json:"error_message"`
+}
+
+func (g *gameBet) BetApi(rooms map[string]*game.RoomSetting, info *player.UserInfo, v interface{}) []byte {
 
 	bet := &betInfo{}
 
 	byte, _ := json.Marshal(v)
 	json.Unmarshal(byte, bet)
 
-	betAmount := bet.Amount
-
-	resp := &betResponse{}
-	resp.Cmd = cmd
+	resp := &BetApiResponse{}
 	resp.BetInfo = bet
 	resp.Balnace = info.GetBalance()
+
+	betAmount := bet.Amount
 
 	if room, exist := rooms[bet.RoomId]; exist {
 
@@ -83,7 +140,6 @@ func (g *gameBet) Bet(rooms map[string]*game.RoomSetting, info *player.UserInfo,
 		if room.Action == startBet || room.Action == countDown {
 
 			resp.Balnace = info.SubBalance(betAmount)
-			data, _ := json.Marshal(resp)
 
 			// TODO define area and verify
 			record := betRecord{}
@@ -92,7 +148,12 @@ func (g *gameBet) Bet(rooms map[string]*game.RoomSetting, info *player.UserInfo,
 			record.Area = bet.Area
 			record.Amount = betAmount
 
-			CreateOrGetRoomBetRecordManger(record.RoomId).AddRecord(record)
+			betInstance := CreateOrGetRoomBetRecordManger(record.RoomId)
+			betInstance.AddRecord(record)
+
+			resp.UserTotalBet = betInstance.GetRecordTotalByUser(info.Name)
+
+			data, _ := json.Marshal(resp)
 
 			return data
 		}
@@ -123,6 +184,38 @@ func (m *betRecordManager) AddRecord(record betRecord) {
 	defer m.lock.Unlock()
 
 	m.reocrd = append(m.reocrd, record)
+}
+
+type useTotalBet struct {
+	Area1 decimal.Decimal `json:"area1"`
+	Area2 decimal.Decimal `json:"area2"`
+	Area3 decimal.Decimal `json:"area3"`
+}
+
+// TODO
+func (m *betRecordManager) GetRecordTotalByUser(userName string) *useTotalBet {
+
+	m.lock.RLock()
+	defer m.lock.RUnlock()
+
+	totalBet := &useTotalBet{}
+
+	for _, v := range m.reocrd {
+
+		if v.UserInfo.Name != userName {
+			continue
+		}
+
+		if v.Area == 1 {
+			totalBet.Area1 = totalBet.Area1.Add(v.Amount)
+		} else if v.Area == 2 {
+			totalBet.Area2 = totalBet.Area2.Add(v.Amount)
+		} else if v.Area == 3 {
+			totalBet.Area3 = totalBet.Area3.Add(v.Amount)
+		}
+	}
+
+	return totalBet
 }
 
 type settleWinInfo struct {

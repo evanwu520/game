@@ -13,6 +13,14 @@ using gorilla websocket to practice brocast game step
 
  return token
 
+ ws conn string "ws://" + document.location.host + "/ws?token="+token)
+
+
+
+ -bet  => curl -X POST http://192.168.6.138:8080/bet -H "token:930142123cd4fb3247d8cd3d0b2630e3" -H "Contelication/json" -d '{"room_id":"r1","area":1,"amount":10}'
+
+{"bet_info":{"room_id":"r1","area":1,"amount":"10"},"balance":"850","user_total_bet":{"area1":"10","area2":"40","area3":"30"},"error_message":""}
+
 
 ---
 
@@ -26,13 +34,6 @@ using gorilla websocket to practice brocast game step
 ```
 
 
-- bet
-
-area => 1: left dice win 2: right dice win  3: tie
-
-```json
-{"cmd":"bet","value":{"room_id":"r1","area":1,"amount":100}}
-```
 
 
 # server return cmd 

@@ -22,9 +22,16 @@ func GetGameBetInstance() *gameBet {
 	return gameBetInstance
 }
 
-func (g *gameBet) Bet(info *player.UserInfo, v interface{}, cmd string) []byte {
+// TODO remove
+// func (g *gameBet) Bet(info *player.UserInfo, v interface{}, cmd string) []byte {
+
+// 	// TODO judge game
+// 	return game_dice.GetGameBetInstance().Bet(GetGameInstance().rooms, info, v, cmd)
+
+// }
+
+func (g *gameBet) BetApi(info *player.UserInfo, v interface{}) []byte {
 
 	// TODO judge game
-	return game_dice.GetGameBetInstance().Bet(GetGameInstance().rooms, info, v, cmd)
-
+	return game_dice.GetGameBetInstance().BetApi(GetGameInstance().rooms, info, v)
 }
