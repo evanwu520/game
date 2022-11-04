@@ -20,7 +20,7 @@ using gorilla websocket to practice brocast game step
 ```
 
 
- - bet 
+ - bet
  ```
  curl -X POST http://192.168.6.138:8080/bet -H "token:930142123cd4fb3247d8cd3d0b2630e3" -H "Contelication/json" -d '{"room_id":"r1","area":1,"amount":10}'
 
@@ -68,14 +68,6 @@ game_room_list => all room from before to now
 {"cmd":"game_room_list","room_list":[{"room_id":"r1","action":"stop_bet","status":null}]}
 {"cmd":"game_room_list","room_list":[{"room_id":"r1","action":"result","status":{"dice1":5,"dice2":3,"win_area":1}}]}
 ```
-
-- bet
-
-
-```
-{"cmd":"bet","bet_info":{"room_id":"r1","area":1,"amount":"100"},"balance":"900","error_message":""}
-```
-
 
 
 - game room list
