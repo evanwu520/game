@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"game/api"
 	"game/core"
 	"game/core/player"
 	"log"
@@ -51,6 +52,8 @@ type Client struct {
 
 	userInfo *player.UserInfo
 
+	userKey string
+
 	// Buffered channel of outbound messages.
 	send chan []byte
 }
@@ -62,6 +65,7 @@ type Client struct {
 // reads from this goroutine.
 func (c *Client) readPump() {
 	defer func() {
+		player.GetPlayerInstance().DelPlayer(c.userKey)
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
@@ -157,10 +161,17 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO verify user
-
 	playerCore := player.GetPlayerInstance()
+	userKey := r.URL.Query().Get(api.TokenTag)
+	user := playerCore.GetPlayer(userKey)
 
-	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), userInfo: playerCore.GeneGuest()}
+	// TODO return  message
+	if user == nil {
+		return
+	}
+
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256), userInfo: user, userKey: userKey}
+
 	client.hub.register <- client
 
 	client.send <- playerCore.PlayerDataFormat(client.userInfo)
@@ -170,6 +181,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
+
 	go client.writePump()
 	go client.readPump()
 }

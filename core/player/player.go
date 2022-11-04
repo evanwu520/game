@@ -1,6 +1,7 @@
 package player
 
 import (
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
 	"game/core/game"
@@ -11,15 +12,16 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// TODO handle all user
+type player struct {
+	playerMap map[string]*UserInfo
+	lock      sync.RWMutex
+}
 
 type UserInfo struct {
 	Name    string          `json:"name"`
 	balance decimal.Decimal `json:"balance"`
 	Lock    sync.RWMutex    `json:"-"`
 }
-
-type player struct{}
 
 var oncePlayer sync.Once
 
@@ -29,11 +31,35 @@ func GetPlayerInstance() *player {
 
 	oncePlayer.Do(func() {
 		playerInstance = &player{}
+		playerInstance.playerMap = make(map[string]*UserInfo) // key token
 	})
 	return playerInstance
 }
 
-func (*player) GeneGuest() *UserInfo {
+func (p *player) AddPlayer(key string, user *UserInfo) {
+
+	p.lock.Lock()
+	defer p.lock.Unlock()
+	p.playerMap[key] = user
+}
+
+func (p *player) GetPlayer(key string) *UserInfo {
+
+	p.lock.Lock()
+	defer p.lock.Unlock()
+
+	return p.playerMap[key]
+}
+
+func (p *player) DelPlayer(key string) {
+
+	p.lock.Lock()
+	defer p.lock.Unlock()
+
+	delete(p.playerMap, key)
+}
+
+func (p *player) GuestLoging() string {
 
 	info := &UserInfo{}
 
@@ -45,9 +71,30 @@ func (*player) GeneGuest() *UserInfo {
 	info.Name = fmt.Sprintf("%09d", v)
 	info.AddBalance(decimal.NewFromInt(1000))
 
-	return info
+	data := []byte(info.Name)
+	has := md5.Sum(data)
+	md5str1 := fmt.Sprintf("%x", has)
 
+	p.AddPlayer(md5str1, info)
+
+	return md5str1
 }
+
+// // TODO remove for websocket
+// func (*player) GeneGuest() *UserInfo {
+
+// 	info := &UserInfo{}
+
+// 	rand.Seed(time.Now().UnixNano())
+// 	max := 999999999
+// 	min := 1
+// 	v := rand.Intn(max-min) + min
+
+// 	info.Name = fmt.Sprintf("%09d", v)
+// 	info.AddBalance(decimal.NewFromInt(1000))
+
+// 	return info
+// }
 
 type gamePlayer struct {
 	Cmd      string          `json:"cmd"`
@@ -62,10 +109,6 @@ func (*player) PlayerDataFormat(info *UserInfo) []byte {
 	resp.Cmd = game.GamePlayerInfoCmd
 	resp.UserName = info.Name
 	resp.Balance = info.balance
-
-	// for _, v := range core.GetGameInstance().GetAllRoomStatus() {
-	// 	resp.RoomList = append(resp.RoomList, v)
-	// }
 
 	dataByte, _ := json.Marshal(resp)
 

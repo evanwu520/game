@@ -9,6 +9,11 @@ using gorilla websocket to practice brocast game step
 - start room curl http://127.0.0.1:8080/start?roomId=r2
 
 
+- guest login curl  http://192.168.6.138:8080/guestLogin 
+
+ return token
+
+
 ---
 
 
@@ -43,19 +48,19 @@ area => 1: left dice win 2: right dice win  3: tie
 
 when connect , the info will return client 
 
-room_list => all room from before to now
-
-```
-{"cmd":"game_player_info","user_name":"976222189","balance":"1000","room_list":[{"room_id":"r1","action":"start_bet","status":{"seconds":8}},{"room_id":"r2","action":"start_bet","status":{"seconds":11}}]}
-
-```
 
 
 ```
-{"cmd":"game_player_info","user_name":"233365577","balance":"1000","room_list":[{"room_id":"r1","action":"start_bet","status":{"seconds":9}}]}
-{"cmd":"game_player_info","user_name":"312947805","balance":"1000","room_list":[{"room_id":"r1","action":"count_down","status":{"seconds":4}}]}
-{"cmd":"game_player_info","user_name":"879086096","balance":"1000","room_list":[{"room_id":"r1","action":"stop_bet","status":null}]}
-{"cmd":"game_player_info","user_name":"097515312","balance":"1000","room_list":[{"room_id":"r1","action":"result","status":{"dice1":5,"dice2":3,"win_area":1}}]}
+{"cmd":"game_player_info","user_name":"976222189","balance":"1000"}
+
+```
+
+game_room_list => all room from before to now
+
+```
+{"cmd":"game_room_list","room_list":[{"room_id":"r1","action":"start_bet","status":{"seconds":9}}]}
+{"cmd":"game_room_list","room_list":[{"room_id":"r1","action":"stop_bet","status":null}]}
+{"cmd":"game_room_list","room_list":[{"room_id":"r1","action":"result","status":{"dice1":5,"dice2":3,"win_area":1}}]}
 ```
 
 - bet

@@ -28,8 +28,19 @@ window.onload = function () {
         return false;
     };
 
+    function httpGet(theUrl){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+    }
+ 
+
     if (window["WebSocket"]) {
-        conn = new WebSocket("ws://" + document.location.host + "/ws");
+
+        token = httpGet("http://"+document.location.host+"/guestLogin")
+        console.log(token)
+        conn = new WebSocket("ws://" + document.location.host + "/ws?token="+token);
         conn.onclose = function (evt) {
             var item = document.createElement("div");
             item.innerHTML = "<b>Connection closed.</b>";
