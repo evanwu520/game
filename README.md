@@ -9,6 +9,7 @@ using gorilla websocket to practice brocast game step
 - start room curl http://127.0.0.1:8080/start?roomId=r2
 
 
+# game api
 - guest login
 ```
  curl  http://192.168.6.138:8080/guestLogin 
