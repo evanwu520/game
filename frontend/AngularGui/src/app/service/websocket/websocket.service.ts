@@ -43,16 +43,4 @@ export class WebsocketService {
       console.log('Your browser does not support WebSockets.')
     }
   }
-
-  sendBet(room_id: string, area: number, amount: number) {
-    let dict = {
-      cmd: 'bet',
-      value: {
-        room_id,
-        area,
-        amount,
-      }
-    }
-    this.conn.send(JSON.stringify(dict))
-  }
 }

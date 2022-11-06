@@ -129,6 +129,6 @@ export class LobbyComponent implements OnInit {
 
   areaClick(room: RoomViewModel, betArea: BetAreaViewModel) {
     // console.log(room, betArea)
-    this.websocket.sendBet(room.name, betArea.id, this.viewModel.selectPoint)
+    this.api.bet(this.viewModel.token, room.name, betArea.id, this.viewModel.selectPoint)
   }
 }

@@ -25,9 +25,22 @@ export class ApiService {
   }
 
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
+  // action
 
   async guestLogin() {
     return this.convenientGet<any>(this.fullURL('guestLogin'));
+  }
+
+  async bet(token: string, room_id: string, area: number, amount: number) {
+    const headers  = {
+      token,
+    }
+    const body = {
+      room_id,
+      area,
+      amount,
+    }
+    return this.convenientPost<any>(this.fullURL('bet'), body, headers);
   }
 
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
@@ -37,6 +50,20 @@ export class ApiService {
   ): Promise<resType> {
 
     const res = await this.http.get(path, {responseType: 'text'}).pipe(timeout(waitTime))
+      .toPromise()
+      .catch(this.handleError);
+
+    return res;
+  }
+
+  private async convenientPost<resType = object>(
+    path: string,
+    body: any = {},
+    headers: any = {},
+    waitTime: number = 1500,
+  ): Promise<resType> {
+
+    const res = await this.http.post(path, body, { headers }).pipe(timeout(waitTime))
       .toPromise()
       .catch(this.handleError);
 
