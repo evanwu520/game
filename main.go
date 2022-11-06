@@ -38,18 +38,18 @@ func main() {
 
 	gameApi := api.NewGameApi()
 
-	http.HandleFunc("/guestLogin", gameApi.GuestLogin)
+	http.HandleFunc("/guestLogin", api.Cors(gameApi.GuestLogin))
 
-	betHandler := http.HandlerFunc(gameApi.Bet)
+	betHandler := http.HandlerFunc(api.Cors(gameApi.Bet))
 	http.Handle("/bet", api.MiddlewareToken(betHandler))
 
 	gameManager := api.NewGameManager()
 
-	http.HandleFunc("/room", gameManager.NewRoom)
+	http.HandleFunc("/room", api.Cors(gameManager.NewRoom))
 
-	http.HandleFunc("/stop", gameManager.Stop)
+	http.HandleFunc("/stop", api.Cors(gameManager.Stop))
 
-	http.HandleFunc("/start", gameManager.Start)
+	http.HandleFunc("/start", api.Cors(gameManager.Start))
 
 	http.HandleFunc("/debug", serveHome)
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {

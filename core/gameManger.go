@@ -45,6 +45,7 @@ func (g *gameManager) NewRoom(roomId string) {
 	status.RoomId = roomId
 	g.roomsStatus[roomId] = status
 
+	// TODO judge game type
 	game_dice.GetGameInstance().NewRoom(room, status)
 
 	roomObj := allRoom{}

@@ -12,7 +12,7 @@ using gorilla websocket to practice brocast game step
 # game api
 - guest login
 ```
- curl  http://192.168.6.138:8080/guestLogin 
+ curl  http://127.0.0.1:8080/guestLogin 
 
  return token
 
@@ -22,7 +22,7 @@ using gorilla websocket to practice brocast game step
 
  - bet
  ```
- curl -X POST http://192.168.6.138:8080/bet -H "token:930142123cd4fb3247d8cd3d0b2630e3" -H "Contelication/json" -d '{"room_id":"r1","area":1,"amount":10}'
+ curl -X POST http://127.0.0.1:8080/bet -H "token:930142123cd4fb3247d8cd3d0b2630e3" -H "Conten-Type: application/json" -d '{"room_id":"r1","area":1,"amount":10}'
 
 {"bet_info":{"room_id":"r1","area":1,"amount":"10"},"balance":"850","user_total_bet":{"area1":"10","area2":"40","area3":"30"},"error_message":""}
 ```
