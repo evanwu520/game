@@ -8,8 +8,8 @@ import { BaseAPIResponse, ErrorResponse } from './api.schema';
 })
 export class ApiService {
 
-  private host = `http://123.193.145.165:1002`
-  // private host = `ws://${document.location.host}/ws`
+  // private host = `http://123.193.145.165:1002`
+  private host = `http://${document.location.host}`
 
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
 
