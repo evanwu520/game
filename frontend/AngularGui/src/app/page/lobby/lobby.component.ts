@@ -127,8 +127,33 @@ export class LobbyComponent implements OnInit {
     }
   }
 
-  areaClick(room: RoomViewModel, betArea: BetAreaViewModel) {
+  async areaClick(room: RoomViewModel, betArea: BetAreaViewModel) {
     // console.log(room, betArea)
-    this.api.bet(this.viewModel.token, room.name, betArea.id, this.viewModel.selectPoint)
+    let res = await this.api.bet(this.viewModel.token, room.name, betArea.id, this.viewModel.selectPoint)
+    // console.log(res)
+    // {
+    //   "bet_info": {
+    //       "room_id": "r1",
+    //       "area": 1,
+    //       "amount": "50"
+    //   },
+    //   "balance": "950",
+    //   "user_total_bet": {
+    //       "area1": "50",
+    //       "area2": "0",
+    //       "area3": "0"
+    //   },
+    //   "error_message": ""
+    // }
+    if (res.error_message) {
+      return
+    }
+    this.viewModel.balance = res.balance
+    let user_total_bet = res.user_total_bet
+
+    for (const betArea of room.betAreaList) {
+      let key = `area${betArea.id}`
+      betArea.amount = user_total_bet[key]
+    }
   }
 }
