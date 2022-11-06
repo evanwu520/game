@@ -1,6 +1,8 @@
 
 export enum DemoCmd {
   game_player_info = 'game_player_info',
+  game_room_list = 'game_room_list',
+
   game_state = 'game_state',
   bet = 'bet',
   game_result = 'game_result',
@@ -51,6 +53,10 @@ export class DemoMessage {
 
   get balance(): string | undefined {
     return this.obj.balance
+  }
+
+  get room_list(): any {
+    return this.obj.room_list
   }
 
   // 房間

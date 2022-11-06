@@ -39,49 +39,15 @@ export class LobbyComponent implements OnInit {
           this.viewModel.userName = event.user_name
           this.viewModel.balance = event.balance
         }
+        else if (event.cmd === DemoCmd.game_room_list) {
+          for (const info of event.room_list) {
+            // 檢查並建立房間
+            this.roomDataUpdate(info)
+          }
+        }
         else if (event.cmd === DemoCmd.game_state) {
-          console.log(`房間:${event.room_name},動作:${event.action},資料:${JSON.stringify(event.data)}`)
-
           // 檢查並建立房間
-          {
-            let room = this.viewModel.roomList.find(ele => ele.name === event.room_name)
-            if (!room) {
-              let newRoom = new RoomViewModel()
-              newRoom.name = event.room_name
-              this.viewModel.roomList.push(newRoom)
-            }
-          }
-          {
-            let room = this.viewModel.roomList.find(ele => ele.name === event.room_name)
-            if (room) {
-              room.action = event.action
-              if (event.data && event.data.seconds) {
-                room.targetTime = new Date(new Date().getTime() + event.data.seconds * 1000);
-              }
-              if (event.action === DemoRoomAction.start_bet) {
-                for (const betArea of room.betAreaList) {
-                  betArea.point = 0
-                  betArea.amount = 0
-                  betArea.isWin = false
-                }
-              }
-              else if (event.action === DemoRoomAction.result) {
-                let pointDict = event.data.point
-                for (const idStr in pointDict) {
-                  const point = pointDict[idStr];
-                  let id = parseInt(idStr)
-                  let betArea = room.betAreaList.find(ele => ele.id === id)
-                  if (betArea) {
-                    betArea.point = point
-                  }
-                }
-                let win_area = event.data.win_area
-                for (const betArea of room.betAreaList) {
-                  betArea.isWin = (betArea.id === win_area)
-                }
-              }
-            }
-          }
+          this.roomDataUpdate(event)
         }
         else if (event.cmd === DemoCmd.bet) {
           if (event.error_message) {
@@ -110,6 +76,54 @@ export class LobbyComponent implements OnInit {
     }
     else {
       console.log('連線已存在')
+    }
+  }
+
+  roomDataUpdate(info: any) {
+    // console.log(info)
+    // console.log(`房間:${info.room_name},動作:${info.action},資料:${JSON.stringify(info.data)}`)
+
+    let roon_id = info.room_name || info.room_id
+    let data = info.data || info.status
+
+    { // 檢查創建
+      let room = this.viewModel.roomList.find(ele => ele.name === roon_id)
+      if (!room) {
+        let newRoom = new RoomViewModel()
+        newRoom.name = roon_id
+        this.viewModel.roomList.push(newRoom)
+      }
+    }
+    { // 更新房間資料
+      let room = this.viewModel.roomList.find(ele => ele.name === roon_id)
+      if (room) {
+        room.action = info.action
+        if (data && data.seconds) {
+          room.targetTime = new Date(new Date().getTime() + data.seconds * 1000);
+        }
+        if (info.action === DemoRoomAction.start_bet) {
+          for (const betArea of room.betAreaList) {
+            betArea.point = 0
+            betArea.amount = 0
+            betArea.isWin = false
+          }
+        }
+        else if (info.action === DemoRoomAction.result) {
+          let pointDict = data.point
+          for (const idStr in pointDict) {
+            const point = pointDict[idStr];
+            let id = parseInt(idStr)
+            let betArea = room.betAreaList.find(ele => ele.id === id)
+            if (betArea) {
+              betArea.point = point
+            }
+          }
+          let win_area = data.win_area
+          for (const betArea of room.betAreaList) {
+            betArea.isWin = (betArea.id === win_area)
+          }
+        }
+      }
     }
   }
 
