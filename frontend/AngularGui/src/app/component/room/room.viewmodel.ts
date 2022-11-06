@@ -1,5 +1,6 @@
 import { ActionDisplayName, DemoRoomAction } from "src/app/service/websocket/websocket.schema"
 
+const initResult = ['[1] 未知', '[2] 未知']
 export class RoomViewModel {
 
   name = ''
@@ -16,9 +17,18 @@ export class RoomViewModel {
     return ActionDisplayName[this.action]
   }
 
-  result = []
+  result = initResult
 
   betAreaList: BetAreaViewModel[] = AllBetAreaId.map(id => new BetAreaViewModel(Number(id)))
+
+  reset() {
+    this.result = initResult
+
+    for (const betArea of this.betAreaList) {
+      betArea.amount = 0
+      betArea.isWin = false
+    }
+  }
 }
 
 export enum AllBetArea {

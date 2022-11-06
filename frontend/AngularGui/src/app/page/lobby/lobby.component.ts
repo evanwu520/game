@@ -67,7 +67,16 @@ export class LobbyComponent implements OnInit {
         }
         else if (event.cmd === DemoCmd.game_result) {
           console.log(`結算資料:${JSON.stringify(event.obj, null, 2)}`)
+
           this.viewModel.balance = event.balance
+          let room_id = event.obj['room_id']
+          let room = this.viewModel.roomList.find(ele => ele.name === room_id)
+          if (room) {
+            room.result.push(`總輸贏:${event.obj['win_amount']}`)
+          }
+          else {
+            console.log('找不到', room_id)
+          }
         }
         else {
           console.log(event.cmd, event.obj)
@@ -102,12 +111,7 @@ export class LobbyComponent implements OnInit {
           room.targetTime = new Date(new Date().getTime() + data.seconds * 1000);
         }
         if (info.action === DemoRoomAction.start_bet) {
-          room.result = []
-
-          for (const betArea of room.betAreaList) {
-            betArea.amount = 0
-            betArea.isWin = false
-          }
+          room.reset()
         }
         else if (info.action === DemoRoomAction.result) {
 
@@ -118,7 +122,7 @@ export class LobbyComponent implements OnInit {
             const point = pointDict[idStr];
             let id = parseInt(idStr)
 
-            result.push(` [${id}] 開 [${point}點] `)
+            result.push(`[${id}] 開 [${point}點]`)
           }
           let win_area = data.win_area
           for (const betArea of room.betAreaList) {
