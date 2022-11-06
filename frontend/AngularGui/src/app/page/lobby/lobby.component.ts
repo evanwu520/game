@@ -3,6 +3,7 @@ import { DemoCmd, DemoRoomAction } from 'src/app/service/websocket/websocket.sch
 import { WebsocketService } from 'src/app/service/websocket/websocket.service';
 import { LobbyViewModel } from './lobby.viewmodel';
 import { BetAreaViewModel, RoomViewModel } from '../../component/room/room.viewmodel';
+import { ApiService } from 'src/app/service/api/api.service';
 
 @Component({
   selector: 'app-lobby',
@@ -16,6 +17,7 @@ export class LobbyComponent implements OnInit {
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
 
   constructor(
+    private api: ApiService,
     private websocket: WebsocketService,
   ) { }
 
@@ -23,6 +25,12 @@ export class LobbyComponent implements OnInit {
   }
 
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
+  async login() {
+    let res = await this.api.guestLogin()
+
+    console.log(res)
+  }
+
   startConnect() {
     if (!this.websocket.conn) {
       this.websocket.startConnect()
