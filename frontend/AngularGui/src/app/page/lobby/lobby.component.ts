@@ -102,26 +102,29 @@ export class LobbyComponent implements OnInit {
           room.targetTime = new Date(new Date().getTime() + data.seconds * 1000);
         }
         if (info.action === DemoRoomAction.start_bet) {
+          room.result = []
+
           for (const betArea of room.betAreaList) {
-            betArea.point = 0
             betArea.amount = 0
             betArea.isWin = false
           }
         }
         else if (info.action === DemoRoomAction.result) {
+
+          let result = []
           let pointDict = data.point
+
           for (const idStr in pointDict) {
             const point = pointDict[idStr];
             let id = parseInt(idStr)
-            let betArea = room.betAreaList.find(ele => ele.id === id)
-            if (betArea) {
-              betArea.point = point
-            }
+
+            result.push(` [${id}] 開 [${point}點] `)
           }
           let win_area = data.win_area
           for (const betArea of room.betAreaList) {
             betArea.isWin = (betArea.id === win_area)
           }
+          room.result = result
         }
       }
     }

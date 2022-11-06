@@ -16,13 +16,25 @@ export class RoomViewModel {
     return ActionDisplayName[this.action]
   }
 
-  betAreaList: BetAreaViewModel[] = AllBetAreaId.map(id => new BetAreaViewModel(id))
+  result = []
+
+  betAreaList: BetAreaViewModel[] = AllBetAreaId.map(id => new BetAreaViewModel(Number(id)))
 }
 
-const AllBetAreaId = [1, 2]
+export enum AllBetArea {
+  Left = 1,
+  Right = 2,
+  Tie = 3,
+}
+const AllBetAreaId = Object.keys(AllBetArea).filter(value => !isNaN(Number(value)))
+
+const BetAreaNameMap = {
+  [AllBetArea.Left]: '1比較大',
+  [AllBetArea.Right]: '2比較大',
+  [AllBetArea.Tie]: '和',
+}
 export class BetAreaViewModel {
 
-  point = 0
   amount = 0
   isWin = false
 
@@ -30,4 +42,7 @@ export class BetAreaViewModel {
     public id: number
   ) { }
 
+  get displayName() {
+    return BetAreaNameMap[this.id]
+  }
 }
