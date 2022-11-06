@@ -1,26 +1,35 @@
 
+<!-- 未登入 -->
 <ng-container *ngIf="!viewModel.userName">
 
-  <button (click)="login()">登入</button>
-  <button (click)="startConnect()">連線</button>
+  <button (click)="login()">登入</button><br>
 
+  <ng-container *ngIf="viewModel.token">
+    <button (click)="startConnect()">連線</button>
+  </ng-container>
 
-  <ng-container *ngIf="viewModel.userName">
+</ng-container>
 
-    <label>使用者:{{ viewModel.userName }}</label><br>
-    <label>餘額:{{ viewModel.balance }}</label>
+<!-- 已登入 -->
+<ng-container *ngIf="viewModel.userName">
 
-    <ng-container *ngFor="let point of viewModel.optionalPoint">
-      <button (click)="viewModel.selectPoint = point">
-        <label *ngIf="viewModel.selectPoint === point">*</label>
-        {{point}}
-      </button>
-    </ng-container>
+  <!-- 使用者資訊 -->
+  <label>使用者:{{ viewModel.userName }}</label><br>
+  <label>餘額:{{ viewModel.balance }}</label>
 
+  <hr>
+
+  <!-- 籌碼選擇 -->
+  <ng-container *ngFor="let point of viewModel.optionalPoint">
+    <button (click)="viewModel.selectPoint = point">
+      <label *ngIf="viewModel.selectPoint === point">*</label>
+      {{point}}
+    </button>
   </ng-container>
 
   <hr>
 
+  <!-- 下注區選擇 -->
   <ng-container *ngFor="let room of viewModel.roomList">
 
     <app-room

@@ -20,9 +20,9 @@ export class WebsocketService {
   constructor() { }
 
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
-  startConnect() {
+  startConnect(token: string) {
     if (window["WebSocket"]) {
-      this.conn = new WebSocket(this.host);
+      this.conn = new WebSocket(`${this.host}?token=${token}`);
       this.conn.onclose = function(evt) {
         console.log('Connection closed.')
       };

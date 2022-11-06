@@ -27,13 +27,12 @@ export class LobbyComponent implements OnInit {
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
   async login() {
     let res = await this.api.guestLogin()
-
-    console.log(res)
+    this.viewModel.token = res
   }
 
   startConnect() {
     if (!this.websocket.conn) {
-      this.websocket.startConnect()
+      this.websocket.startConnect(this.viewModel.token)
       this.websocket.onMessage$.subscribe((event) => {
         if (event.cmd === DemoCmd.game_player_info) {
           console.log(`使用者:${event.user_name},餘額:${event.balance}`)

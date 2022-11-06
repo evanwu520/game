@@ -36,12 +36,11 @@ export class ApiService {
     waitTime: number = 1500,
   ): Promise<resType> {
 
-    const res = await this.http.get(path).pipe(timeout(waitTime))
+    const res = await this.http.get(path, {responseType: 'text'}).pipe(timeout(waitTime))
       .toPromise()
       .catch(this.handleError);
 
-    const baseResponse = new BaseAPIResponse(res);
-    return baseResponse as any;
+    return res;
   }
 
   private handleError(error: any): Promise<any> {
