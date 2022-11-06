@@ -40,8 +40,7 @@ func main() {
 
 	http.HandleFunc("/guestLogin", api.Cors(gameApi.GuestLogin))
 
-	betHandler := http.HandlerFunc(api.Cors(gameApi.Bet))
-	http.Handle("/bet", api.MiddlewareToken(betHandler))
+	http.Handle("/bet", api.Cors(api.MiddlewareToken(gameApi.Bet)))
 
 	gameManager := api.NewGameManager()
 
