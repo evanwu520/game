@@ -20,9 +20,9 @@ export class WebsocketService {
   constructor() { }
 
   // ====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====.====
-  startConnect() {
+  startConnect(token: string) {
     if (window["WebSocket"]) {
-      this.conn = new WebSocket(this.host);
+      this.conn = new WebSocket(`${this.host}?token=${token}`);
       this.conn.onclose = function(evt) {
         console.log('Connection closed.')
       };
@@ -42,17 +42,5 @@ export class WebsocketService {
     } else {
       console.log('Your browser does not support WebSockets.')
     }
-  }
-
-  sendBet(room_id: string, area: number, amount: number) {
-    let dict = {
-      cmd: 'bet',
-      value: {
-        room_id,
-        area,
-        amount,
-      }
-    }
-    this.conn.send(JSON.stringify(dict))
   }
 }

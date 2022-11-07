@@ -4,11 +4,16 @@
   <label>房名: {{ viewModel.name }}</label>&nbsp;
   <label>動作: {{ viewModel.actionName }}</label><br>
   <label>倒數: {{ viewModel.remaindTime }}秒</label><br>
+  <label>結果:</label><br>
+  <ng-container *ngFor="let info of viewModel.result">
+    <label>{{info}}</label><br>
+  </ng-container>
 
   <ng-container *ngFor="let betArea of viewModel.betAreaList">
 
     <div class="bet-area" (click)="areaClick.emit(betArea)">
-      <label>下注區:{{ betArea.id }}</label><br>
+      <!-- <label>下注區:{{ betArea.id }}</label><br> -->
+      <label>下注區:{{ betArea.displayName }}</label><br>
       <label>壓注:{{ betArea.amount }}</label><br>
       <label *ngIf="betArea.point !== 0">點數:{{ betArea.point }}</label><br>
       <label *ngIf="betArea.isWin">WIN</label>
