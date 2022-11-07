@@ -56,57 +56,6 @@ type betResponse struct {
 	ErrorMessage string          `json:"error_message"`
 }
 
-// TODO remove
-// func (g *gameBet) Bet(rooms map[string]*game.RoomSetting, info *player.UserInfo, v interface{}, cmd string) []byte {
-
-// 	bet := &betInfo{}
-
-// 	byte, _ := json.Marshal(v)
-// 	json.Unmarshal(byte, bet)
-
-// 	betAmount := bet.Amount
-
-// 	resp := &betResponse{}
-// 	resp.Cmd = cmd
-// 	resp.BetInfo = bet
-// 	resp.Balnace = info.GetBalance()
-
-// 	if room, exist := rooms[bet.RoomId]; exist {
-
-// 		if info.GetBalance().LessThanOrEqual(decimal.NewFromInt(0)) || info.GetBalance().LessThan(betAmount) {
-
-// 			resp.ErrorMessage = fmt.Sprintf("%s balance is not enough !", info.Name)
-// 			data, _ := json.Marshal(resp)
-
-// 			return data
-// 		}
-
-// 		if room.Action == startBet || room.Action == countDown {
-
-// 			resp.Balnace = info.SubBalance(betAmount)
-// 			data, _ := json.Marshal(resp)
-
-// 			// TODO define area and verify
-// 			record := betRecord{}
-// 			record.UserInfo = info
-// 			record.RoomId = bet.RoomId
-// 			record.Area = bet.Area
-// 			record.Amount = betAmount
-
-// 			CreateOrGetRoomBetRecordManger(record.RoomId).AddRecord(record)
-
-// 			return data
-// 		}
-
-// 	}
-
-// 	resp.ErrorMessage = fmt.Sprintf("%s bet %v failed !", info.Name, betAmount)
-// 	data, _ := json.Marshal(resp)
-
-// 	return data
-
-// }
-
 type BetApiResponse struct {
 	BetInfo      *betInfo        `json:"bet_info"`
 	Balnace      decimal.Decimal `json:"balance"`
@@ -137,7 +86,7 @@ func (g *gameBet) BetApi(rooms map[string]*game.RoomSetting, info *player.UserIn
 			return data
 		}
 
-		if room.Action == startBet || room.Action == countDown {
+		if room.Action == game.StartBet || room.Action == game.CountDown {
 
 			resp.Balnace = info.SubBalance(betAmount)
 

@@ -13,6 +13,14 @@ const (
 	GameResultCmd     = "game_result"
 )
 
+const (
+	StartBet  Action = "start_bet"
+	CountDown Action = "count_down"
+	StopBet   Action = "stop_bet"
+	Result    Action = "result"
+	Stop      Action = "stop"
+)
+
 var GameBroadcast chan []byte = make(chan []byte)
 var ResultBrocast chan ResultBrocastInfo = make(chan ResultBrocastInfo)
 
@@ -24,8 +32,6 @@ type ResultBrocastInfo struct {
 type RoomSetting struct {
 	RoomId string
 	Step   []*Stage
-	Stop   chan bool
-	Start  chan bool
 	Action Action
 }
 
@@ -36,10 +42,23 @@ type Stage struct {
 	WaitTime time.Duration
 }
 
+func GetBankerStep() []*Stage {
+
+	var stages []*Stage
+
+	stages = append(stages, &Stage{Action: StartBet, WaitTime: 12})
+	stages = append(stages, &Stage{Action: StopBet, WaitTime: 1})
+	stages = append(stages, &Stage{Action: Result, WaitTime: 4})
+
+	return stages
+}
+
 type RoomStatus struct {
 	RoomId string       `json:"room_id"`
 	Action Action       `json:"action"`
 	Status interface{}  `json:"status"`
+	Stop   chan bool    `json:"-"`
+	Start  chan bool    `json:"-"`
 	lock   sync.RWMutex `json:"-"`
 }
 

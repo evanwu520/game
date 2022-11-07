@@ -22,29 +22,19 @@ func GetGameInstance() *gameDice {
 
 type gameDice struct{}
 
-const (
-	startBet  game.Action = "start_bet"
-	countDown game.Action = "count_down"
-	stopBet   game.Action = "stop_bet"
-	result    game.Action = "result"
-	stop      game.Action = "stop"
-)
-
 func (g *gameDice) getStep() []*game.Stage {
 
 	var stages []*game.Stage
 
-	stages = append(stages, &game.Stage{Action: game.Action(startBet), WaitTime: 30})
+	stages = append(stages, &game.Stage{Action: game.StartBet, WaitTime: 12})
 	// stages = append(stages, &game.Stage{Action: countDown, WaitTime: 5})
-	stages = append(stages, &game.Stage{Action: stopBet, WaitTime: 1})
-	stages = append(stages, &game.Stage{Action: result, WaitTime: 4})
+	stages = append(stages, &game.Stage{Action: game.StopBet, WaitTime: 1})
+	stages = append(stages, &game.Stage{Action: game.Result, WaitTime: 4})
 
 	return stages
 }
 
 func (g *gameDice) NewRoom(setting *game.RoomSetting, status *game.RoomStatus) {
-
-	setting.Step = g.getStep()
 
 	g.Run(setting, status)
 }
@@ -56,21 +46,21 @@ func (g *gameDice) Run(setting *game.RoomSetting, status *game.RoomStatus) {
 		for {
 
 			select {
-			case v, _ := <-setting.Stop:
+			case v, _ := <-status.Stop:
 
 				if v {
 
 					data := game.RoomActionResp{}
 					data.Cmd = game.GameStateCmd
 					data.RoomName = setting.RoomId
-					data.Action = stop
+					data.Action = game.Stop
 
-					status.ChangeRoomStatus(stop, nil)
+					status.ChangeRoomStatus(game.Stop, nil)
 
 					byteData, _ := json.Marshal(data)
 					game.GameBroadcast <- byteData
 
-					<-setting.Start
+					<-status.Start
 				}
 
 			default:
@@ -90,7 +80,7 @@ func (g *gameDice) Run(setting *game.RoomSetting, status *game.RoomStatus) {
 
 					switch v.Action {
 
-					case startBet, countDown:
+					case game.StartBet, game.CountDown:
 						m = make(map[string]interface{})
 						m["seconds"] = v.WaitTime
 
@@ -112,9 +102,9 @@ func (g *gameDice) Run(setting *game.RoomSetting, status *game.RoomStatus) {
 
 						}(v.WaitTime)
 
-					case stop:
+					case game.Stop:
 						status.ChangeRoomStatus(v.Action, nil)
-					case result:
+					case game.Result:
 						// TODO
 						m = make(map[string]interface{})
 						pointMap := make(map[string]int)

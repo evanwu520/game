@@ -2,10 +2,15 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
 	"game/core/game"
 	"game/core/game_dice"
 	"sync"
 )
+
+func init() {
+
+}
 
 var once sync.Once
 
@@ -33,19 +38,26 @@ func (g *gameManager) NewRoom(roomId string) {
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
+	if _, exist := g.rooms[roomId]; exist {
+		return
+	}
+
 	// TODO  judge game type for instance
 	room := &game.RoomSetting{}
 	room.RoomId = roomId
-	room.Stop = make(chan bool)
-	room.Start = make(chan bool)
+
+	room.Step = game.GetBankerStep()
 
 	g.rooms[roomId] = room
 
 	status := &game.RoomStatus{}
 	status.RoomId = roomId
+	status.Stop = make(chan bool)
+	status.Start = make(chan bool)
 	g.roomsStatus[roomId] = status
 
 	// TODO judge game type
+	game_dice.GetGameBetInstance()
 	game_dice.GetGameInstance().NewRoom(room, status)
 
 	roomObj := allRoom{}
@@ -66,26 +78,37 @@ type allRoom struct {
 	Rooms []string `json:"rooms"`
 }
 
+// TODO
 func (g *gameManager) Stop(roomId string) {
 
-	g.lock.Lock()
-	defer g.lock.Unlock()
+	go func(roomId string) {
+		g.roomsStatusLock.Lock()
+		defer g.roomsStatusLock.Unlock()
 
-	if v, exist := g.rooms[roomId]; exist {
+		if v, exist := g.roomsStatus[roomId]; exist {
 
-		v.Stop <- true
-	}
+			if v.Action != game.Stop {
+				v.Stop <- true
+			}
+		}
+	}(roomId)
 }
 
+// TODO
 func (g *gameManager) Start(roomId string) {
 
-	g.lock.Lock()
-	defer g.lock.Unlock()
+	go func(roomId string) {
+		g.roomsStatusLock.Lock()
+		defer g.roomsStatusLock.Unlock()
 
-	if v, exist := g.rooms[roomId]; exist {
+		if v, exist := g.roomsStatus[roomId]; exist {
+			if v.Action == game.Stop {
+				v.Start <- true
+			}
+		}
 
-		v.Start <- true
-	}
+	}(roomId)
+
 }
 
 func (g *gameManager) GetAllRoomStatus() map[string]*game.RoomStatus {
@@ -121,7 +144,12 @@ func (g *gameManager) ListRooms() []byte {
 		resp.RoomList = append(resp.RoomList, v)
 	}
 
-	dataByte, _ := json.Marshal(resp)
+	dataByte, err := json.Marshal(resp)
+
+	//  TODO
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
 	return dataByte
 }

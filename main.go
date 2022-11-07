@@ -7,7 +7,6 @@ package main
 import (
 	"flag"
 	"game/api"
-	"game/core/game_dice"
 	"log"
 	"net/http"
 )
@@ -32,9 +31,6 @@ func main() {
 	hub := newHub()
 	go hub.run()
 	go hub.runGameListener()
-
-	// TODO init
-	game_dice.GetGameBetInstance()
 
 	gameApi := api.NewGameApi()
 
