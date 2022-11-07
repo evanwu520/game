@@ -186,6 +186,7 @@ func (g *gameDice) diceRandom() int {
 	min := 1
 	max := 6
 
+	// TODO
 	s1 := rand.NewSource(time.Now().UnixNano() + int64(rand.Intn(1000)))
 	r1 := rand.New(s1)
 
